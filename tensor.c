@@ -139,25 +139,6 @@ int tensor_init_rand(tensor t, int dimension, const int *size, int max)
 	return 1;
 }
 
-int tensor_init_identity(tensor t, int dimension, int size)
-{
-	int i ,j;
-	int *indx = malloc(sizeof(int) * dimension);
-
-	for(i = 0; i < dimension; i++) indx[i] = size;
-	if(!tensor_init_zero(t, dimension, indx)) {
-		free(indx);
-		return 0;
-	}
-	for(j = 0; j < size; j++) {
-		for(i = 0; i < dimension; i++) indx[i] = j;
-		tensor_set(t, indx, 1);
-	}
-	free(indx);
-	return 1;
-}
-
-
 void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
 {
 	int i;

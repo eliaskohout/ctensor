@@ -32,7 +32,6 @@ dtype tensor_get(const tensor t, const int *index, int *success);
 int tensor_init_one(tensor t, int dimension, const int *size);
 int tensor_init_zero(tensor t, int dimension, const int *size);
 int tensor_init_rand(tensor t, int dimension, const int *size, int max);
-int tensor_init_identity(tensor t, int dimension, int size);
 
 void tensor_for_each_elem(tensor t, dtype (*func)(dtype));
 void tensor_print(const tensor t);
