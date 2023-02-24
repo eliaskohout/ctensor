@@ -15,7 +15,7 @@ void tensor_destroy(tensor t)
 	}
 }
 
-int tensor_is_empty(tensor t){
+int tensor_is_empty(const tensor t){
 	return t->elements == NULL || t->size == NULL;
 }
 
@@ -80,7 +80,7 @@ int tensor_set(tensor t, const int *index, t_type val)
 	return 1;
 }
 
-t_type tensor_get(tensor t, const int *index, int *success)
+t_type tensor_get(const tensor t, const int *index, int *success)
 {
 	int i, offset = 0;
 	if(tensor_is_empty(t)) return 0;
@@ -141,7 +141,7 @@ void tensor_for_each_elem(tensor t, t_type (*func)(t_type))
 	}
 }
 
-void tensor_print(tensor t)
+void tensor_print(const tensor t)
 {
 	int i, j;
 	int *indx;
