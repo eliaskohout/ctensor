@@ -70,11 +70,13 @@ int tensor_set(tensor t, const int *index, t_type val)
 {
 	int i, offset = 0;
 	if(tensor_is_empty(t)) return 0;
+	if(t->dimension == 0) return t->elements[0] = val;
 
 	for(i = 0; i < t->dimension - 1; i++) {
-		if(t->size[i] >= index[i]) return 0;
-		offset += t->size[i] * index[i];
+		if(t->size[i] <= index[i]) return 0;
+		offset += t->size[i + 1] * index[i];
 	}
+	if(t->size[t->dimension - 1] <= index[t->dimension - 1]) return 0;
 	offset += index[t->dimension - 1];
 	t->elements[offset] = val;
 	return 1;
@@ -84,15 +86,21 @@ t_type tensor_get(const tensor t, const int *index, int *success)
 {
 	int i, offset = 0;
 	if(tensor_is_empty(t)) return 0;
+	if(t->dimension == 0) return t->elements[0];
 
 	for(i = 0; i < t->dimension - 1; i++) {
 		if(t->size[i] <= index[i]) {
 			if(success != NULL) *success = 0;
 			return 0;
 		}
-		offset += t->size[i] * index[i];
+		offset += t->size[i + 1] * index[i];
+	}
+	if(t->size[t->dimension - 1] <= index[t->dimension - 1]) {
+		if(success != NULL) *success = 0;
+		return 0;
 	}
 	offset += index[t->dimension - 1];
+
 	if(success != NULL) *success = 1;
 	return t->elements[offset];
 }
@@ -187,33 +195,33 @@ void tensor_print(const tensor t)
 		indx = malloc(sizeof(int) * 2);
 		if(t->size[0] == 1) {
 			putchar('(');
-			indx[1] = 0;
+			indx[0] = 0;
 			for(i = 0; i < t->size[1]; i++) {
-				indx[0] = i;
+				indx[1] = i;
 				printf(PRINT_STRING, tensor_get(t, indx, NULL));
 			}
 			printf(")\n");
 		} else {
 			printf("\n/");
-			indx[1] = 0;
+			indx[0] = 0;
 			for(i = 0; i < t->size[1]; i++) {
-				indx[0] = i;
+				indx[1] = i;
 				printf(PRINT_STRING, tensor_get(t, indx, NULL));
 			}
 			printf("\\\n");
 			for(i = 1; i < t->size[0] - 1; i++) {
 				putchar('|');
-				indx[1] = i;
+				indx[0] = i;
 				for(j = 0; j < t->size[1]; j++) {
-					indx[0] = j;
+					indx[1] = j;
 					printf(PRINT_STRING, tensor_get(t, indx, NULL));
 				}
 				printf("|\n");
 			}
 			printf("\\");
-			indx[t->size[1] - 1] = 0;
+			indx[0] = t->size[0] - 1;
 			for(i = 0; i < t->size[1]; i++) {
-				indx[0] = i;
+				indx[1] = i;
 				printf(PRINT_STRING, tensor_get(t, indx, NULL));
 			}
 			printf("/\n");
