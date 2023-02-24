@@ -119,14 +119,14 @@ int tensor_init_zero(tensor t, int dimension, const int *size)
 	return 1;
 }
 
-int tensor_init_rand(tensor t, int dimension, const int *size)
+int tensor_init_rand(tensor t, int dimension, const int *size, int max)
 {
 	int i;
 	srand(time(NULL));
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (t_type) rand();
+		t->elements[i] = (t_type) (rand() % max);
 	}
 	return 1;
 }

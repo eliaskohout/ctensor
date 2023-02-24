@@ -31,7 +31,7 @@ t_type tensor_get(const tensor t, const int *index, int *success);
 
 int tensor_init_one(tensor t, int dimension, const int *size);
 int tensor_init_zero(tensor t, int dimension, const int *size);
-int tensor_init_rand(tensor t, int dimension, const int *size);
+int tensor_init_rand(tensor t, int dimension, const int *size, int max);
 
 void tensor_for_each_elem(tensor t, t_type (*func)(t_type));
 void tensor_print(const tensor t);
