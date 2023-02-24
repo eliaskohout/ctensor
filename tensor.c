@@ -32,7 +32,7 @@ int _tensor_check_size(const int *size, int dim)
 int _tensor_set_size(tensor t, const int *size, int dim)
 {
 	int *temp;
-	t_type *t_temp;
+	dtype *t_temp;
 	int i, num_elem = 1;
 
 	for(i = 0; i < dim; i++) {
@@ -44,7 +44,7 @@ int _tensor_set_size(tensor t, const int *size, int dim)
 	temp = realloc(t->size, dim * sizeof(int));
 	if(temp == NULL && dim != 0) return 0;
 	/* Try allocating memory for the Tensor */
-	t_temp = realloc(t->elements, num_elem * sizeof(t_type));
+	t_temp = realloc(t->elements, num_elem * sizeof(dtype));
 	if(t_temp == NULL) {
 		/* Revert to before the function call and return */
 		t->size = realloc(temp, t->dimension * sizeof(int));
@@ -66,7 +66,7 @@ int _tensor_set_size(tensor t, const int *size, int dim)
 	return 1;
 }
 
-int tensor_set(tensor t, const int *index, t_type val)
+int tensor_set(tensor t, const int *index, dtype val)
 {
 	int i, offset = 0;
 	if(tensor_is_empty(t)) return 0;
@@ -82,7 +82,7 @@ int tensor_set(tensor t, const int *index, t_type val)
 	return 1;
 }
 
-t_type tensor_get(const tensor t, const int *index, int *success)
+dtype tensor_get(const tensor t, const int *index, int *success)
 {
 	int i, offset = 0;
 	if(tensor_is_empty(t)) return 0;
@@ -111,7 +111,7 @@ int tensor_init_one(tensor t, int dimension, const int *size)
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (t_type) 1;
+		t->elements[i] = (dtype) 1;
 	}
 	return 1;
 }
@@ -122,7 +122,7 @@ int tensor_init_zero(tensor t, int dimension, const int *size)
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (t_type) 0;
+		t->elements[i] = (dtype) 0;
 	}
 	return 1;
 }
@@ -134,12 +134,31 @@ int tensor_init_rand(tensor t, int dimension, const int *size, int max)
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (t_type) (rand() % max);
+		t->elements[i] = (dtype) (rand() % max);
 	}
 	return 1;
 }
 
-void tensor_for_each_elem(tensor t, t_type (*func)(t_type))
+int tensor_init_identity(tensor t, int dimension, int size)
+{
+	int i ,j;
+	int *indx = malloc(sizeof(int) * dimension);
+
+	for(i = 0; i < dimension; i++) indx[i] = size;
+	if(!tensor_init_zero(t, dimension, indx)) {
+		free(indx);
+		return 0;
+	}
+	for(j = 0; j < size; j++) {
+		for(i = 0; i < dimension; i++) indx[i] = j;
+		tensor_set(t, indx, 1);
+	}
+	free(indx);
+	return 1;
+}
+
+
+void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
 {
 	int i;
 	srand(time(NULL));
