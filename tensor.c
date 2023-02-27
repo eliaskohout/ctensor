@@ -130,11 +130,26 @@ int tensor_init_zero(tensor t, int dimension, const int *size)
 int tensor_init_rand(tensor t, int dimension, const int *size, int max)
 {
 	int i;
-	srand(time(NULL));
+	static int last_seed;
+	last_seed += time(NULL) * 200 + rand();
+	srand(last_seed);
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (dtype) (rand() % max);
+		t->elements[i] = (dtype) ((double) rand() / RAND_MAX * max);
+	}
+	return 1;
+}
+
+int tensor_add(tensor t1, const tensor t2)
+{
+	int i;
+	if(t1->dimension != t2->dimension) return 0;
+	for(i = 0; i < t1->dimension; i++) {
+		if(t1->size[i] != t2->size[i]) return 0;
+	}
+	for(i = 0; i < t1->num_elem; i++) {
+		t1->elements[i] += t2->elements[i];
 	}
 	return 1;
 }
@@ -142,8 +157,6 @@ int tensor_init_rand(tensor t, int dimension, const int *size, int max)
 void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
 {
 	int i;
-	srand(time(NULL));
-
 	for(i = 0; i < t->num_elem; i++) {
 		t->elements[i] = func(t->elements[i]);
 	}
