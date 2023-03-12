@@ -15,8 +15,22 @@ void tensor_destroy(tensor t)
 	}
 }
 
-int tensor_is_empty(const tensor t){
+int tensor_is_empty(const tensor t)
+{
 	return t->elements == NULL || t->size == NULL;
+}
+
+int tensor_is_equal(const tensor t1, const tensor t2)
+{
+	int i;
+	if (t1->dimension != t2->dimension) return 0;
+	for (i = 0; i < t1->dimension; i++) {
+		if (t1->size[i] != t2->size[i]) return 0;
+	}
+	for (i = 0; i < t1->num_elem; i++) {
+		if (t1->elements[i] != t2->elements[i]) return 0;
+	}
+	return 1;
 }
 
 int _tensor_check_size(const int *size, int dim)
@@ -163,6 +177,16 @@ void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
 	for(i = 0; i < t->num_elem; i++) {
 		t->elements[i] = func(t->elements[i]);
 	}
+}
+
+int tensor_cpy(tensor t1, const tensor t2)
+{
+	int i;
+	if(!_tensor_set_size(t1, t2->size, t2->dimension)) return 0;
+	for(i = 0; i < t2->num_elem; i++) {
+		t1->elements[i] = t2->elements[i];
+	}
+	return 1;
 }
 
 void tensor_print(const tensor t)

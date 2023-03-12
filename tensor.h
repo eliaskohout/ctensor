@@ -22,6 +22,7 @@ tensor tensor_new(void);
 void tensor_destroy(tensor t);
 
 int tensor_is_empty(const tensor t);
+int tensor_is_equal(const tensor t1, const tensor t2);
 
 int _tensor_check_size(const int *size, int dim);
 int _tensor_set_size(tensor t, const int *size, int dim);
@@ -36,6 +37,7 @@ int tensor_init_rand(tensor t, int dimension, const int *size, int max);
 int tensor_add(tensor t1, const tensor t2);
 
 void tensor_for_each_elem(tensor t, dtype (*func)(dtype));
+int tensor_cpy(tensor t1, const tensor t2);
 void tensor_print(const tensor t);
 
 #endif
