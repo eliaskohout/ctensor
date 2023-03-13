@@ -1,6 +1,4 @@
 #include "tensor.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 tensor tensor_new(void)
 {
@@ -12,7 +10,9 @@ void tensor_destroy(tensor t)
 	if (!tensor_is_empty(t)) {
 		free(t->size);
 		free(t->elements);
+		free(t->index_offsets);
 	}
+	free(t);
 }
 
 int tensor_is_empty(const tensor t)
@@ -22,6 +22,9 @@ int tensor_is_empty(const tensor t)
 
 int tensor_is_equal(const tensor t1, const tensor t2)
 {
+	assert(!tensor_is_empty(t1));
+	assert(!tensor_is_empty(t2));
+
 	int i;
 	if (t1->dimension != t2->dimension) return 0;
 	for (i = 0; i < t1->dimension; i++) {
@@ -45,36 +48,47 @@ int _tensor_check_size(const int *size, int dim)
 
 int _tensor_set_size(tensor t, const int *size, int dim)
 {
-	int *temp;
-	dtype *t_temp;
-	int i, num_elem = 1;
+	/* Sets the size of a Tensor. During this process all data in the tensor t is lost. */
 
+	int *temp1;
+	int *temp2;
+	dtype *temp3;
+	int i, j, num_elem = 1;
+
+	if(!_tensor_check_size(size, dim)) return 0;
+
+	/* Try allocating memory for the size/ index_offset array of the tensor */
 	for(i = 0; i < dim; i++) {
 		num_elem *= size[i];
 	}
-
-	if(!_tensor_check_size(size, dim)) return 0;
-	/* Try allocating memory for the size array of the tensor */
-	temp = realloc(t->size, dim * sizeof(int));
-	if(temp == NULL && dim != 0) return 0;
-	/* Try allocating memory for the tensor */
-	t_temp = realloc(t->elements, num_elem * sizeof(dtype));
-	if(t_temp == NULL) {
-		/* Revert to before the function call and return */
-		t->size = realloc(temp, t->dimension * sizeof(int));
-		if(t->size == NULL && t->dimension != 0) {
-			printf("Fatal error in _tensor_set_size when reallocating memory.");
-			exit(-1);
-		}
+	temp1 = malloc(dim * sizeof(int));
+	temp2 = malloc(dim * sizeof(int));
+	temp3 = malloc(num_elem * sizeof(dtype));
+	if((temp1 == NULL && dim != 0) || (temp2 == NULL && dim != 0) || temp3 == NULL) {
+		free(temp1);
+		free(temp2);
 		return 0;
 	}
 
+	/* Freeing old memory. */
+	free(t->size);
+	free(t->index_offsets);
+	free(t->elements);
+
 	/* Setting the size array */
-	t->size = temp;
+	t->size = temp1;
 	if(dim != 0) memcpy(t->size, size, dim * sizeof(int));
 	t->dimension = dim;
+	/* Setting the index_offset array */
+	t->index_offsets = temp2;
+	for(i = 0; i < t->dimension; i++) {
+		t->index_offsets[i] = 1;
+		for(j = i + 1; j < t->dimension; j++) {
+			t->index_offsets[i] *= t->size[j];
+		}
+	}
 	/* Setting the elements pointer and memory usage */
-	t->elements = t_temp;
+	t->elements = temp3;
 	t->num_elem = num_elem;
 
 	return 1;
@@ -82,19 +96,10 @@ int _tensor_set_size(tensor t, const int *size, int dim)
 
 int tensor_set(tensor t, const int *index, dtype val)
 {
-	int i, j, offset = 0;
-	int *size_offset = malloc(t->dimension * sizeof(int));
-	/* TODO free on error */
+	assert(!tensor_is_empty(t));
 
-	if(size_offset == NULL) return 0;
-	for(i = 0; i < t->dimension; i++) {
-		size_offset[i] = 1;
-		for(j = i + 1; j < t->dimension; j++) {
-			size_offset[i] *= t->size[j];
-		}
-	}
+	int i, offset = 0;
 
-	if(tensor_is_empty(t)) return 0;
 	if(t->dimension == 0) {
 		t->elements[0] = val;
 		return 1;
@@ -102,29 +107,19 @@ int tensor_set(tensor t, const int *index, dtype val)
 
 	for(i = 0; i < t->dimension; i++) {
 		if(t->size[i] <= index[i]) return 0;
-		offset += size_offset[i] * index[i];
+		offset += t->index_offsets[i] * index[i];
 	}
 
 	t->elements[offset] = val;
-	free(size_offset);
 	return 1;
 }
 
 dtype tensor_get(const tensor t, const int *index, int *success)
 {
-	int i, j, offset = 0;
-	int *size_offset = malloc(t->dimension * sizeof(int));
-	/* TODO free on error */
+	assert(!tensor_is_empty(t));
 
-	if(size_offset == NULL) return 0;
-	for(i = 0; i < t->dimension; i++) {
-		size_offset[i] = 1;
-		for(j = i + 1; j < t->dimension; j++) {
-			size_offset[i] *= t->size[j];
-		}
-	}
+	int i, offset = 0;
 
-	if(tensor_is_empty(t)) return 0;
 	if(t->dimension == 0) return t->elements[0];
 
 	for(i = 0; i < t->dimension; i++) {
@@ -132,7 +127,7 @@ dtype tensor_get(const tensor t, const int *index, int *success)
 			if(success != NULL) *success = 0;
 			return 0;
 		}
-		offset += size_offset[i] * index[i];
+		offset += t->index_offsets[i] * index[i];
 	}
 
 	if(success != NULL) *success = 1;
@@ -177,6 +172,9 @@ int tensor_init_rand(tensor t, int dimension, const int *size, int max)
 
 int tensor_add(tensor t1, const tensor t2)
 {
+	assert(!tensor_is_empty(t1));
+	assert(!tensor_is_empty(t2));
+
 	int i;
 	if(t1->dimension != t2->dimension) return 0;
 	for(i = 0; i < t1->dimension; i++) {
@@ -190,6 +188,8 @@ int tensor_add(tensor t1, const tensor t2)
 
 void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
 {
+	assert(!tensor_is_empty(t));
+
 	int i;
 	for(i = 0; i < t->num_elem; i++) {
 		t->elements[i] = func(t->elements[i]);
@@ -198,6 +198,8 @@ void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
 
 int tensor_cpy(tensor t1, const tensor t2)
 {
+	assert(!tensor_is_empty(t2));
+
 	int i;
 	if(!_tensor_set_size(t1, t2->size, t2->dimension)) return 0;
 	for(i = 0; i < t2->num_elem; i++) {

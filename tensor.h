@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
 
 #define PRINT_STRING " %4.1f "
 
@@ -14,6 +15,7 @@ typedef struct _tensor {
 	dtype *elements;
 	int dimension;
 	int *size;
+	int *index_offsets;
 	int num_elem;
 } *tensor;
 
