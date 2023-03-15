@@ -33,8 +33,6 @@
 #define tensor_assert_eq(X, Y)  tensor_assert(tensor_is_equal((X), (Y)), "(tensor_assert_eq)")
 #define tensor_assert_ne(X, Y)  tensor_assert(!tensor_is_equal((X), (Y)), "(tensor_assert_ne)")
 
-#define SUCCESS_PRINT  printf(ANSI_COLOR_GREEN "success" ANSI_COLOR_RESET " of %s\n", __func__);
-
 void test_run_all(void);
 
 void test_tensor_is_equal(void);
