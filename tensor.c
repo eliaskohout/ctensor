@@ -238,6 +238,22 @@ int tensor_add(tensor t1, const tensor t2)
 	return 1;
 }
 
+int tensor_sub(tensor t1, const tensor t2)
+{
+	assert(!tensor_is_empty(t1));
+	assert(!tensor_is_empty(t2));
+
+	int i;
+	if(t1->dimension != t2->dimension) return 0;
+	for(i = 0; i < t1->dimension; i++) {
+		if(t1->size[i] != t2->size[i]) return 0;
+	}
+	for(i = 0; i < t1->num_elem; i++) {
+		t1->elements[i] -= t2->elements[i];
+	}
+	return 1;
+}
+
 void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
 {
 	assert(!tensor_is_empty(t));
