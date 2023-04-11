@@ -6,6 +6,7 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#include <stdarg.h>
 
 /* Defining the datatype of the tensor */
 typedef float dtype;
@@ -53,10 +54,12 @@ int tensor_cpy(tensor t1, const tensor t2);
 
 void tensor_add_scalar(tensor t, dtype n);
 void tensor_sub_scalar(tensor t, dtype n);
-void tensor_mult_scalar(tensor t, dtype n);
+void tensor_mul_scalar(tensor t, dtype n);
 void tensor_div_scalar(tensor t, dtype n);
 int tensor_add_inplace(tensor t1, const tensor t2);
 int tensor_sub_inplace(tensor t1, const tensor t2);
+tensor tensor_add(const tensor t1, const tensor t2);
+tensor tensor_sub(const tensor t1, const tensor t2);
 
 void tensor_map(tensor t, dtype (*func)(dtype));
 void tensor_print(const tensor t);
