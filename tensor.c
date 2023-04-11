@@ -1,4 +1,5 @@
 #include "tensor.h"
+#include <stdio.h>
 
 tensor tensor_new(void)
 {
@@ -31,7 +32,7 @@ int tensor_is_equal(const tensor t1, const tensor t2)
 		if (t1->size[i] != t2->size[i]) return 0;
 	}
 	for (i = 0; i < t1->num_elem; i++) {
-		if (t1->elements[i] != t2->elements[i]) return 0;
+		if (DTYPE_NE(t1->elements[i], t2->elements[i])) return 0;
 	}
 	return 1;
 }
@@ -140,7 +141,7 @@ int tensor_init_one(tensor t, int dimension, const int *size)
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (dtype) 1;
+		t->elements[i] = DTYPE_ONE;
 	}
 	return 1;
 }
@@ -151,12 +152,12 @@ int tensor_init_zero(tensor t, int dimension, const int *size)
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (dtype) 0;
+		t->elements[i] = DTYPE_ZERO;
 	}
 	return 1;
 }
 
-int tensor_init_rand(tensor t, int dimension, const int *size, int max)
+int tensor_init_rand(tensor t, int dimension, const int *size, dtype max)
 {
 	int i;
 	static int last_seed;
@@ -165,7 +166,7 @@ int tensor_init_rand(tensor t, int dimension, const int *size, int max)
 
 	if(!_tensor_set_size(t, size, dimension)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = (dtype) ((double) rand() / RAND_MAX * max);
+		t->elements[i] = DTYPE_RAND(max);
 	}
 	return 1;
 }
@@ -188,7 +189,7 @@ void tensor_add_scalar(tensor t, dtype n)
 
 	int i;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] += n;
+		t->elements[i] = DTYPE_ADD(t->elements[i], n);
 	}
 }
 
@@ -198,7 +199,7 @@ void tensor_sub_scalar(tensor t, dtype n)
 
 	int i;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] -= n;
+		t->elements[i] = DTYPE_SUB(t->elements[i], n);
 	}
 }
 
@@ -208,7 +209,7 @@ void tensor_mult_scalar(tensor t, dtype n)
 
 	int i;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] *= n;
+		t->elements[i] = DTYPE_MUL(t->elements[i], n);
 	}
 }
 
@@ -218,7 +219,7 @@ void tensor_div_scalar(tensor t, dtype n)
 
 	int i;
 	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] /= n;
+		t->elements[i] = DTYPE_DIV(t->elements[i], n);
 	}
 }
 
@@ -233,7 +234,7 @@ int tensor_add(tensor t1, const tensor t2)
 		if(t1->size[i] != t2->size[i]) return 0;
 	}
 	for(i = 0; i < t1->num_elem; i++) {
-		t1->elements[i] += t2->elements[i];
+		t1->elements[i] = DTYPE_ADD(t1->elements[i], t2->elements[i]);
 	}
 	return 1;
 }
@@ -249,7 +250,7 @@ int tensor_sub(tensor t1, const tensor t2)
 		if(t1->size[i] != t2->size[i]) return 0;
 	}
 	for(i = 0; i < t1->num_elem; i++) {
-		t1->elements[i] -= t2->elements[i];
+		t1->elements[i] = DTYPE_SUB(t1->elements[i], t2->elements[i]);
 	}
 	return 1;
 }
@@ -284,25 +285,25 @@ void tensor_print(const tensor t)
 
 	if(t->dimension == 0) {
 	/* scalar */
-		printf(PRINT_STRING, t->elements[0]);
+		DTYPE_PRINT(t->elements[0]);
 		putchar('\n');
 	} else if (t->dimension == 1) {
 	/* column vector */
 		if(t->size[0] == 1) {
 			putchar('(');
-			printf(PRINT_STRING, t->elements[0]);
+			DTYPE_PRINT(t->elements[0]);
 			printf(")\n");
 		} else {
 			printf("\n/");
-			printf(PRINT_STRING, t->elements[0]);
+			DTYPE_PRINT(t->elements[0]);
 			printf("\\\n");
 			for(i = 1; i < t->size[0] - 1; i++) {
 				putchar('|');
-				printf(PRINT_STRING, t->elements[i]);
+				DTYPE_PRINT(t->elements[i]);
 				printf("|\n");
 			}
 			printf("\\");
-			printf(PRINT_STRING, t->elements[t->size[0] - 1]);
+			DTYPE_PRINT(t->elements[t->size[0] - 1]);
 			printf("/\n");
 		}
 	} else if (t->dimension == 2) {
@@ -313,7 +314,7 @@ void tensor_print(const tensor t)
 			indx[0] = 0;
 			for(i = 0; i < t->size[1]; i++) {
 				indx[1] = i;
-				printf(PRINT_STRING, tensor_get(t, indx, NULL));
+				DTYPE_PRINT(tensor_get(t, indx, NULL));
 			}
 			printf(")\n");
 		} else {
@@ -321,7 +322,7 @@ void tensor_print(const tensor t)
 			indx[0] = 0;
 			for(i = 0; i < t->size[1]; i++) {
 				indx[1] = i;
-				printf(PRINT_STRING, tensor_get(t, indx, NULL));
+				DTYPE_PRINT(tensor_get(t, indx, NULL));
 			}
 			printf("\\\n");
 			for(i = 1; i < t->size[0] - 1; i++) {
@@ -329,7 +330,7 @@ void tensor_print(const tensor t)
 				indx[0] = i;
 				for(j = 0; j < t->size[1]; j++) {
 					indx[1] = j;
-					printf(PRINT_STRING, tensor_get(t, indx, NULL));
+					DTYPE_PRINT(tensor_get(t, indx, NULL));
 				}
 				printf("|\n");
 			}
@@ -337,13 +338,18 @@ void tensor_print(const tensor t)
 			indx[0] = t->size[0] - 1;
 			for(i = 0; i < t->size[1]; i++) {
 				indx[1] = i;
-				printf(PRINT_STRING, tensor_get(t, indx, NULL));
+				DTYPE_PRINT(tensor_get(t, indx, NULL));
 			}
 			printf("/\n");
 		}
 		free(indx);
 	} else {
-		printf(" print function not yet implemented for dim > 2.");
+		putchar('[');
+		for(i = 0; i < t->num_elem; i++) {
+			DTYPE_PRINT(t->elements[i]);
+		}
+		putchar(']');
+		putchar('\n');
 	}
 }
 
