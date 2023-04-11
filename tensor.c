@@ -223,7 +223,7 @@ void tensor_div_scalar(tensor t, dtype n)
 	}
 }
 
-int tensor_add(tensor t1, const tensor t2)
+int tensor_add_inplace(tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
@@ -239,7 +239,7 @@ int tensor_add(tensor t1, const tensor t2)
 	return 1;
 }
 
-int tensor_sub(tensor t1, const tensor t2)
+int tensor_sub_inplace(tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
@@ -255,7 +255,7 @@ int tensor_sub(tensor t1, const tensor t2)
 	return 1;
 }
 
-void tensor_for_each_elem(tensor t, dtype (*func)(dtype))
+void tensor_map(tensor t, dtype (*func)(dtype))
 {
 	assert(!tensor_is_empty(t));
 
