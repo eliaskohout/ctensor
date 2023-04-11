@@ -187,7 +187,6 @@ int tensor_cpy(tensor t1, const tensor t2)
 	return 1;
 }
 
-
 dtype _tensor_dtype_add_helper(dtype d) { return DTYPE_ADD(d, _tensor_scalar_wise_helper); }
 dtype _tensor_dtype_sub_helper(dtype d) { return DTYPE_SUB(d, _tensor_scalar_wise_helper); }
 dtype _tensor_dtype_mul_helper(dtype d) { return DTYPE_MUL(d, _tensor_scalar_wise_helper); }
@@ -255,6 +254,31 @@ int tensor_sub_inplace(tensor t1, const tensor t2)
 		t1->elements[i] = DTYPE_SUB(t1->elements[i], t2->elements[i]);
 	}
 	return 1;
+}
+
+tensor tensor_add(const tensor t1, const tensor t2)
+{
+	assert(!tensor_is_empty(t1));
+	assert(!tensor_is_empty(t2));
+
+	tensor t3 = tensor_new();
+	if(t3 == NULL) return NULL;
+	if (!tensor_cpy(t3, t1)) return NULL;
+	if (!tensor_add_inplace(t3, t2)) return NULL;
+	return t3;
+}
+
+tensor tensor_sub(const tensor t1, const tensor t2)
+{
+	assert(!tensor_is_empty(t1));
+	assert(!tensor_is_empty(t2));
+
+	tensor t3 = tensor_new();
+	if(t3 == NULL) return NULL;
+	if (!tensor_cpy(t3, t1)) return NULL;
+	if (!tensor_sub_inplace(t3, t2)) return NULL;
+	return t3;
+
 }
 
 void tensor_map(tensor t, dtype (*func)(dtype))
