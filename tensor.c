@@ -31,8 +31,8 @@ int tensor_is_equal(const tensor t1, const tensor t2)
 	assert(!tensor_is_empty(t2));
 
 	int i;
-	if (t1->dimension != t2->dimension) return 0;
-	for (i = 0; i < t1->dimension; i++) {
+	if (t1->rank != t2->rank) return 0;
+	for (i = 0; i < t1->rank; i++) {
 		if (t1->size[i] != t2->size[i]) return 0;
 	}
 	for (i = 0; i < t1->num_elem; i++) {
@@ -83,12 +83,12 @@ int _tensor_set_size(tensor t, const int *size, int dim)
 	/* Setting the size array */
 	t->size = temp1;
 	if(dim != 0) memcpy(t->size, size, dim * sizeof(int));
-	t->dimension = dim;
+	t->rank = dim;
 	/* Setting the index_offset array */
 	t->index_offsets = temp2;
-	for(i = 0; i < t->dimension; i++) {
+	for(i = 0; i < t->rank; i++) {
 		t->index_offsets[i] = 1;
-		for(j = i + 1; j < t->dimension; j++) {
+		for(j = i + 1; j < t->rank; j++) {
 			t->index_offsets[i] *= t->size[j];
 		}
 	}
@@ -105,12 +105,12 @@ int tensor_set(tensor t, const int *index, dtype val)
 
 	int i, offset = 0;
 
-	if(t->dimension == 0) {
+	if(t->rank == 0) {
 		t->elements[0] = val;
 		return 1;
 	}
 
-	for(i = 0; i < t->dimension; i++) {
+	for(i = 0; i < t->rank; i++) {
 		if(t->size[i] <= index[i]) return 0;
 		offset += t->index_offsets[i] * index[i];
 	}
@@ -125,9 +125,9 @@ dtype tensor_get(const tensor t, const int *index, int *success)
 
 	int i, offset = 0;
 
-	if(t->dimension == 0) return t->elements[0];
+	if(t->rank == 0) return t->elements[0];
 
-	for(i = 0; i < t->dimension; i++) {
+	for(i = 0; i < t->rank; i++) {
 		if(t->size[i] <= index[i]) {
 			if(success != NULL) *success = 0;
 			return 0;
@@ -139,36 +139,36 @@ dtype tensor_get(const tensor t, const int *index, int *success)
 	return t->elements[offset];
 }
 
-int tensor_init_one(tensor t, int dimension, const int *size)
+int tensor_init_one(tensor t, int rank, const int *size)
 {
 	int i;
 
-	if(!_tensor_set_size(t, size, dimension)) return 0;
+	if(!_tensor_set_size(t, size, rank)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
 		t->elements[i] = DTYPE_ONE;
 	}
 	return 1;
 }
 
-int tensor_init_zero(tensor t, int dimension, const int *size)
+int tensor_init_zero(tensor t, int rank, const int *size)
 {
 	int i;
 
-	if(!_tensor_set_size(t, size, dimension)) return 0;
+	if(!_tensor_set_size(t, size, rank)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
 		t->elements[i] = DTYPE_ZERO;
 	}
 	return 1;
 }
 
-int tensor_init_rand(tensor t, int dimension, const int *size, dtype max)
+int tensor_init_rand(tensor t, int rank, const int *size, dtype max)
 {
 	int i;
 	static int last_seed;
 	last_seed += time(NULL) * 200 + rand();
 	srand(last_seed);
 
-	if(!_tensor_set_size(t, size, dimension)) return 0;
+	if(!_tensor_set_size(t, size, rank)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
 		t->elements[i] = DTYPE_RAND(max);
 	}
@@ -180,7 +180,7 @@ int tensor_cpy(tensor t1, const tensor t2)
 	assert(!tensor_is_empty(t2));
 
 	int i;
-	if(!_tensor_set_size(t1, t2->size, t2->dimension)) return 0;
+	if(!_tensor_set_size(t1, t2->size, t2->rank)) return 0;
 	for(i = 0; i < t2->num_elem; i++) {
 		t1->elements[i] = t2->elements[i];
 	}
@@ -230,8 +230,8 @@ int tensor_add_inplace(tensor t1, const tensor t2)
 	assert(!tensor_is_empty(t2));
 
 	int i;
-	if(t1->dimension != t2->dimension) return 0;
-	for(i = 0; i < t1->dimension; i++) {
+	if(t1->rank != t2->rank) return 0;
+	for(i = 0; i < t1->rank; i++) {
 		if(t1->size[i] != t2->size[i]) return 0;
 	}
 	for(i = 0; i < t1->num_elem; i++) {
@@ -246,8 +246,8 @@ int tensor_sub_inplace(tensor t1, const tensor t2)
 	assert(!tensor_is_empty(t2));
 
 	int i;
-	if(t1->dimension != t2->dimension) return 0;
-	for(i = 0; i < t1->dimension; i++) {
+	if(t1->rank != t2->rank) return 0;
+	for(i = 0; i < t1->rank; i++) {
 		if(t1->size[i] != t2->size[i]) return 0;
 	}
 	for(i = 0; i < t1->num_elem; i++) {
@@ -301,19 +301,19 @@ void tensor_print(const tensor t)
 		return;
 	}
 
-	printf("Tensor of dimension %i and size (", t->dimension);
-	for(i = 0; i < t->dimension - 1; i++) {
+	printf("Tensor of rank %i and size (", t->rank);
+	for(i = 0; i < t->rank - 1; i++) {
 		printf("%i, ", t->size[i]);
 	}
-	if(t->dimension == 0) printf("): ");
-	else printf("%i): ", t->size[t->dimension - 1]);
+	if(t->rank == 0) printf("): ");
+	else printf("%i): ", t->size[t->rank - 1]);
 
 
-	if(t->dimension == 0) {
+	if(t->rank == 0) {
 	/* scalar */
 		DTYPE_PRINT(t->elements[0]);
 		putchar('\n');
-	} else if (t->dimension == 1) {
+	} else if (t->rank == 1) {
 	/* column vector */
 		if(t->size[0] == 1) {
 			putchar('(');
@@ -332,7 +332,7 @@ void tensor_print(const tensor t)
 			DTYPE_PRINT(t->elements[t->size[0] - 1]);
 			printf("/\n");
 		}
-	} else if (t->dimension == 2) {
+	} else if (t->rank == 2) {
 	/* matix */
 		indx = malloc(sizeof(int) * 2);
 		if(t->size[0] == 1) {
