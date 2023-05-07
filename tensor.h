@@ -64,7 +64,6 @@ uint8_t tensor_sub_inplace(tensor t1, const tensor t2);
 tensor tensor_add(const tensor t1, const tensor t2);
 tensor tensor_sub(const tensor t1, const tensor t2);
 
-void tensor_map(tensor t, dtype (*func)(dtype));
 void tensor_print(const tensor t);
 
 #endif

@@ -1,8 +1,5 @@
 #include "tensor.h"
-
-/* A helper for f.e. the tensor_add_scalar function */
-dtype _tensor_scalar_wise_helper;
-
+#include "tensoriterator.h"
 
 tensor tensor_new(void)
 {
@@ -189,41 +186,40 @@ uint8_t tensor_cpy(tensor t1, const tensor t2)
 	return 1;
 }
 
-dtype _tensor_dtype_add_helper(dtype d) { return DTYPE_ADD(d, _tensor_scalar_wise_helper); }
-dtype _tensor_dtype_sub_helper(dtype d) { return DTYPE_SUB(d, _tensor_scalar_wise_helper); }
-dtype _tensor_dtype_mul_helper(dtype d) { return DTYPE_MUL(d, _tensor_scalar_wise_helper); }
-dtype _tensor_dtype_div_helper(dtype d) { return DTYPE_DIV(d, _tensor_scalar_wise_helper); }
-
 void tensor_add_scalar(tensor t, dtype n)
 {
 	assert(!tensor_is_empty(t));
 
-	_tensor_scalar_wise_helper = n;
-	tensor_map(t, &_tensor_dtype_add_helper);
+	tensoriter_scalar iter = tensoriter_scalar_create(t);
+	tensoriter_scalar_map_add(iter, n);
+	tensoriter_scalar_destroy(iter);
 }
 
 void tensor_sub_scalar(tensor t, dtype n)
 {
 	assert(!tensor_is_empty(t));
 
-	_tensor_scalar_wise_helper = n;
-	tensor_map(t, &_tensor_dtype_sub_helper);
+	tensoriter_scalar iter = tensoriter_scalar_create(t);
+	tensoriter_scalar_map_sub(iter, n);
+	tensoriter_scalar_destroy(iter);
 }
 
 void tensor_mul_scalar(tensor t, dtype n)
 {
 	assert(!tensor_is_empty(t));
 
-	_tensor_scalar_wise_helper = n;
-	tensor_map(t, &_tensor_dtype_mul_helper);
+	tensoriter_scalar iter = tensoriter_scalar_create(t);
+	tensoriter_scalar_map_mul(iter, n);
+	tensoriter_scalar_destroy(iter);
 }
 
 void tensor_div_scalar(tensor t, dtype n)
 {
 	assert(!tensor_is_empty(t));
 
-	_tensor_scalar_wise_helper = n;
-	tensor_map(t, &_tensor_dtype_div_helper);
+	tensoriter_scalar iter = tensoriter_scalar_create(t);
+	tensoriter_scalar_map_div(iter, n);
+	tensoriter_scalar_destroy(iter);
 }
 
 uint8_t tensor_add_inplace(tensor t1, const tensor t2)
@@ -281,16 +277,6 @@ tensor tensor_sub(const tensor t1, const tensor t2)
 	if (!tensor_sub_inplace(t3, t2)) return NULL;
 	return t3;
 
-}
-
-void tensor_map(tensor t, dtype (*func)(dtype))
-{
-	assert(!tensor_is_empty(t));
-
-	uint32_t i;
-	for(i = 0; i < t->num_elem; i++) {
-		t->elements[i] = func(t->elements[i]);
-	}
 }
 
 void tensor_print(const tensor t)
