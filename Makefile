@@ -1,23 +1,46 @@
-test: target/test
-	./target/test
+CC = cc
+CC_FLAGS = -Wall -Wextra -pedantic -Ofast
+LD_FLAGS = #-pthread
 
-build: target/build/tensor.o
+TARGET = .target
+DIR_TESTS = tests
 
-target/test: target/build/tests/test_tensor.o target/build/tests/main.o target/build/tensor.o
-	cc $^ -o target/test
+FILES = $(addprefix $(TARGET)/build/, $(shell ls ./*.c | sed 's/\.c/\.o/g'))
+FILES_TEST = $(shell find $(DIR_TESTS) -name '*.c' | sed 's/\.c/\.o/g' | sed 's/$(DIR_TESTS)/$(TARGET)\/build\/$(DIR_TESTS)/g')
 
-target/build/tests/main.o: tests/main.c
-	cc -c $< -o $@ -pedantic -Wall -Wextra
+test: $(TARGET)/test
+	cd $(TARGET)/ && ./test
 
-target/build/tests/test_tensor.o: tests/test_tensor.c tests/test_tensor.h
-	cc -c $< -o $@ -pedantic -Wall -Wextra
+build: $(TARGET)/ctensor.o
 
-target/build/tensor.o: tensor.c tensor.h
-	cc -c $< -o $@ -pedantic -Wall -Wextra
+$(TARGET)/test: $(FILES_TEST) $(TARGET)/ctensor.o
+	$(CC) $(LD_FLAGS) $^ -o $@
 
-init:
-	mkdir -p ./target/build/tests
+$(TARGET)/ctensor.o: $(FILES)
+	ld $(LD_FLAGS) -r $^ -o $@
 
+
+# --- Source ---
+$(TARGET)/build:
+	mkdir -p $@
+
+$(TARGET)/build/%.o: %.c %.h | $(TARGET)/build
+	$(CC) $(CC_FLAGS) -c $< -o $@
+
+
+# --- Tests ---
+OBJ_DIR_TESTS = $(TARGET)/build/$(DIR_TESTS)
+
+$(OBJ_DIR_TESTS):
+	mkdir -p $@
+
+$(OBJ_DIR_TESTS)/main.o: $(DIR_TESTS)/main.c | $(OBJ_DIR_TESTS)
+	$(CC) $(CC_FLAGS) -c $< -o $@
+
+$(OBJ_DIR_TESTS)/test_tensor.o: $(DIR_TESTS)/test_tensor.c $(DIR_TESTS)/test_tensor.h | $(OBJ_DIR_TESTS)
+	$(CC) $(CC_FLAGS) -c $< -o $@
+
+
+# --- Utils ---
 clean:
-	rm -f ./target/build/*.o
-	rm -f ./target/test
+	rm -rf $(TARGET)
