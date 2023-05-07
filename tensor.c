@@ -1,5 +1,4 @@
 #include "tensor.h"
-#include <stdio.h>
 
 /* A helper for f.e. the tensor_add_scalar function */
 dtype _tensor_scalar_wise_helper;
@@ -20,17 +19,17 @@ void tensor_destroy(tensor t)
 	free(t);
 }
 
-int tensor_is_empty(const tensor t)
+uint8_t tensor_is_empty(const tensor t)
 {
 	return t->elements == NULL || t->size == NULL;
 }
 
-int tensor_is_equal(const tensor t1, const tensor t2)
+uint8_t tensor_is_equal(const tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
 
-	int i;
+	uint32_t i;
 	if (t1->rank != t2->rank) return 0;
 	for (i = 0; i < t1->rank; i++) {
 		if (t1->size[i] != t2->size[i]) return 0;
@@ -41,37 +40,38 @@ int tensor_is_equal(const tensor t1, const tensor t2)
 	return 1;
 }
 
-int _tensor_check_size(const int *size, int dim)
+uint8_t _tensor_check_size(const uint32_t *size, uint8_t rank)
 {
-	int i;
-	if(dim < 0) return 0;
-	for(i = 0; i < dim; i++) {
+	uint8_t i;
+	if(rank < 0) return 0;
+	for(i = 0; i < rank; i++) {
 		if(size[i] < 1) return 0;
 	}
 	return 1;
 }
 
-int _tensor_set_size(tensor t, const int *size, int dim)
+uint8_t _tensor_set_size(tensor t, const uint32_t *size, uint8_t rank)
 {
 	/* Sets the size of a Tensor. During this process all data in the tensor t is lost. */
 
-	int *temp1;
-	int *temp2;
-	dtype *temp3;
-	int i, j, num_elem = 1;
+	uint32_t *temp_size;
+	uint32_t *temp_index_offset;
+	dtype *temp_elements;
+	uint8_t i, j;
+	uint32_t num_elem = 1;
 
-	if(!_tensor_check_size(size, dim)) return 0;
+	if(!_tensor_check_size(size, rank)) return 0;
 
 	/* Try allocating memory for the size/ index_offset array of the tensor */
-	for(i = 0; i < dim; i++) {
+	for(i = 0; i < rank; i++) {
 		num_elem *= size[i];
 	}
-	temp1 = malloc(dim * sizeof(int));
-	temp2 = malloc(dim * sizeof(int));
-	temp3 = malloc(num_elem * sizeof(dtype));
-	if((temp1 == NULL && dim != 0) || (temp2 == NULL && dim != 0) || temp3 == NULL) {
-		free(temp1);
-		free(temp2);
+	temp_size = malloc(rank * sizeof(uint32_t));
+	temp_index_offset = malloc(rank * sizeof(uint32_t));
+	temp_elements = malloc(num_elem * sizeof(dtype));
+	if((temp_size == NULL && rank != 0) || (temp_index_offset == NULL && rank != 0) || temp_elements == NULL) {
+		free(temp_size);
+		free(temp_index_offset);
 		return 0;
 	}
 
@@ -81,11 +81,11 @@ int _tensor_set_size(tensor t, const int *size, int dim)
 	free(t->elements);
 
 	/* Setting the size array */
-	t->size = temp1;
-	if(dim != 0) memcpy(t->size, size, dim * sizeof(int));
-	t->rank = dim;
+	t->size = temp_size;
+	if(rank != 0) memcpy(t->size, size, rank * sizeof(uint32_t));
+	t->rank = rank;
 	/* Setting the index_offset array */
-	t->index_offsets = temp2;
+	t->index_offsets = temp_index_offset;
 	for(i = 0; i < t->rank; i++) {
 		t->index_offsets[i] = 1;
 		for(j = i + 1; j < t->rank; j++) {
@@ -93,17 +93,18 @@ int _tensor_set_size(tensor t, const int *size, int dim)
 		}
 	}
 	/* Setting the elements pointer and memory usage */
-	t->elements = temp3;
+	t->elements = temp_elements;
 	t->num_elem = num_elem;
 
 	return 1;
 }
 
-int tensor_set(tensor t, const int *index, dtype val)
+uint8_t tensor_set(tensor t, const uint32_t *index, dtype val)
 {
 	assert(!tensor_is_empty(t));
 
-	int i, offset = 0;
+	uint8_t i;
+	uint32_t offset = 0;
 
 	if(t->rank == 0) {
 		t->elements[0] = val;
@@ -119,11 +120,12 @@ int tensor_set(tensor t, const int *index, dtype val)
 	return 1;
 }
 
-dtype tensor_get(const tensor t, const int *index, int *success)
+dtype tensor_get(const tensor t, const uint32_t *index, uint8_t *success)
 {
 	assert(!tensor_is_empty(t));
 
-	int i, offset = 0;
+	uint8_t i;
+	uint32_t offset = 0;
 
 	if(t->rank == 0) return t->elements[0];
 
@@ -139,9 +141,9 @@ dtype tensor_get(const tensor t, const int *index, int *success)
 	return t->elements[offset];
 }
 
-int tensor_init_one(tensor t, int rank, const int *size)
+uint8_t tensor_init_one(tensor t, uint8_t rank, const uint32_t *size)
 {
-	int i;
+	uint32_t i;
 
 	if(!_tensor_set_size(t, size, rank)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
@@ -150,9 +152,9 @@ int tensor_init_one(tensor t, int rank, const int *size)
 	return 1;
 }
 
-int tensor_init_zero(tensor t, int rank, const int *size)
+uint8_t tensor_init_zero(tensor t, uint8_t rank, const uint32_t *size)
 {
-	int i;
+	uint32_t i;
 
 	if(!_tensor_set_size(t, size, rank)) return 0;
 	for(i = 0; i < t->num_elem; i++) {
@@ -161,10 +163,10 @@ int tensor_init_zero(tensor t, int rank, const int *size)
 	return 1;
 }
 
-int tensor_init_rand(tensor t, int rank, const int *size, dtype max)
+uint8_t tensor_init_rand(tensor t, uint8_t rank, const uint32_t *size, dtype max)
 {
-	int i;
-	static int last_seed;
+	uint32_t i;
+	static long last_seed;
 	last_seed += time(NULL) * 200 + rand();
 	srand(last_seed);
 
@@ -175,11 +177,11 @@ int tensor_init_rand(tensor t, int rank, const int *size, dtype max)
 	return 1;
 }
 
-int tensor_cpy(tensor t1, const tensor t2)
+uint8_t tensor_cpy(tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t2));
 
-	int i;
+	uint32_t i;
 	if(!_tensor_set_size(t1, t2->size, t2->rank)) return 0;
 	for(i = 0; i < t2->num_elem; i++) {
 		t1->elements[i] = t2->elements[i];
@@ -224,12 +226,12 @@ void tensor_div_scalar(tensor t, dtype n)
 	tensor_map(t, &_tensor_dtype_div_helper);
 }
 
-int tensor_add_inplace(tensor t1, const tensor t2)
+uint8_t tensor_add_inplace(tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
 
-	int i;
+	uint32_t i;
 	if(t1->rank != t2->rank) return 0;
 	for(i = 0; i < t1->rank; i++) {
 		if(t1->size[i] != t2->size[i]) return 0;
@@ -240,12 +242,12 @@ int tensor_add_inplace(tensor t1, const tensor t2)
 	return 1;
 }
 
-int tensor_sub_inplace(tensor t1, const tensor t2)
+uint8_t tensor_sub_inplace(tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
 
-	int i;
+	uint32_t i;
 	if(t1->rank != t2->rank) return 0;
 	for(i = 0; i < t1->rank; i++) {
 		if(t1->size[i] != t2->size[i]) return 0;
@@ -285,7 +287,7 @@ void tensor_map(tensor t, dtype (*func)(dtype))
 {
 	assert(!tensor_is_empty(t));
 
-	int i;
+	uint32_t i;
 	for(i = 0; i < t->num_elem; i++) {
 		t->elements[i] = func(t->elements[i]);
 	}
@@ -293,8 +295,8 @@ void tensor_map(tensor t, dtype (*func)(dtype))
 
 void tensor_print(const tensor t)
 {
-	int i, j;
-	int *indx;
+	uint32_t i, j;
+	uint32_t *indx;
 
 	if(tensor_is_empty(t)){
 		printf("<empty tensor>\n");

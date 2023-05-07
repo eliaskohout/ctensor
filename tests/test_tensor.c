@@ -1,4 +1,5 @@
 #include "test_tensor.h"
+#include <stdint.h>
 
 void test_run_all(void)
 {
@@ -19,7 +20,7 @@ void test_run_all(void)
 void test_tensor_is_equal(void)
 {
 	/* Depends on tensor_cpy, tensor_is_equal, tensor_init_zero, tensor_init_rand */
-	int s[4] = {2, 5, 3, 7};
+	uint32_t s[4] = {2, 5, 3, 7};
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
@@ -38,8 +39,8 @@ void test_tensor_is_equal(void)
 void test_tensor_set(void)
 {
 	/* Depends on tensor_is_equal, tensor_init_zero, tensor_init_rand */
-	int s[4] = {2, 5, 3, 7};
-	int index[4] = {0, 0, 0, 0};
+	uint32_t s[4] = {2, 5, 3, 7};
+	uint32_t index[4] = {0, 0, 0, 0};
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
@@ -63,9 +64,9 @@ void test_tensor_set(void)
 void test_tensor_get(void)
 {
 	/* Depends on tensor_is_equal, tensor_set, tensor_init_zero, tensor_init_rand */
-	int status;
-	int s[4] = {2, 5, 3, 7};
-	int index[4] = {0, 0, 0, 0};
+	uint8_t status;
+	uint32_t s[4] = {2, 5, 3, 7};
+	uint32_t index[4] = {0, 0, 0, 0};
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
