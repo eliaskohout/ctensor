@@ -186,42 +186,6 @@ uint8_t tensor_cpy(tensor t1, const tensor t2)
 	return 1;
 }
 
-void tensor_add_scalar(tensor t, dtype n)
-{
-	assert(!tensor_is_empty(t));
-
-	tensoriter_scalar iter = tensoriter_scalar_create(t);
-	tensoriter_scalar_map_add(iter, n);
-	tensoriter_scalar_destroy(iter);
-}
-
-void tensor_sub_scalar(tensor t, dtype n)
-{
-	assert(!tensor_is_empty(t));
-
-	tensoriter_scalar iter = tensoriter_scalar_create(t);
-	tensoriter_scalar_map_sub(iter, n);
-	tensoriter_scalar_destroy(iter);
-}
-
-void tensor_mul_scalar(tensor t, dtype n)
-{
-	assert(!tensor_is_empty(t));
-
-	tensoriter_scalar iter = tensoriter_scalar_create(t);
-	tensoriter_scalar_map_mul(iter, n);
-	tensoriter_scalar_destroy(iter);
-}
-
-void tensor_div_scalar(tensor t, dtype n)
-{
-	assert(!tensor_is_empty(t));
-
-	tensoriter_scalar iter = tensoriter_scalar_create(t);
-	tensoriter_scalar_map_div(iter, n);
-	tensoriter_scalar_destroy(iter);
-}
-
 uint8_t tensor_add_inplace(tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t1));

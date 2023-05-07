@@ -55,10 +55,6 @@ uint8_t tensor_init_zero(tensor t, uint8_t rank, const uint32_t *size);
 uint8_t tensor_init_rand(tensor t, uint8_t rank, const uint32_t *size, dtype max);
 uint8_t tensor_cpy(tensor t1, const tensor t2);
 
-void tensor_add_scalar(tensor t, dtype n);
-void tensor_sub_scalar(tensor t, dtype n);
-void tensor_mul_scalar(tensor t, dtype n);
-void tensor_div_scalar(tensor t, dtype n);
 uint8_t tensor_add_inplace(tensor t1, const tensor t2);
 uint8_t tensor_sub_inplace(tensor t1, const tensor t2);
 tensor tensor_add(const tensor t1, const tensor t2);
