@@ -1,4 +1,3 @@
-#include "../tensor.h"
 #include "test_tensor.h"
 
 int main(void)

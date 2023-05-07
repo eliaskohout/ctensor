@@ -3,7 +3,7 @@
 void test_run_all(void)
 {
 	int i;
-	void (*test_func[NUM_TEST_FUNC])() = {
+	void (*test_func[NUM_TEST_FUNC])(void) = {
 		&test_tensor_is_equal,
 		&test_tensor_set,
 		&test_tensor_get,
