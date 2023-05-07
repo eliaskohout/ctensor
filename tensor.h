@@ -1,8 +1,6 @@
 #ifndef TENSOR_H_INCLUDED
 #define TENSOR_H_INCLUDED
 
-#include <_types/_uint32_t.h>
-#include <_types/_uint8_t.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

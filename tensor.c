@@ -1,5 +1,4 @@
 #include "tensor.h"
-#include "tensoriterator.h"
 
 tensor tensor_new(void)
 {

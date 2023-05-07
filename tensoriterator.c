@@ -39,8 +39,8 @@ dtype *tensoriter_scalar_get(tensoriter_scalar it)
 void tensoriter_scalar_map(tensoriter_scalar it, dtype (*func)(dtype))
 {
 	do {
-		dtype el = *tensoriter_scalar_get(it);
-		el = func(el);
+		dtype *el = tensoriter_scalar_get(it);
+		*el = func(*el);
 	} while(tensoriter_scalar_next(it));
 }
 
