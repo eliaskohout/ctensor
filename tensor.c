@@ -15,25 +15,25 @@ void tensor_destroy(tensor t)
 	free(t);
 }
 
-uint8_t tensor_is_empty(const tensor t)
+bool tensor_is_empty(const tensor t)
 {
 	return t->elements == NULL || t->size == NULL;
 }
 
-uint8_t tensor_is_equal(const tensor t1, const tensor t2)
+bool tensor_is_equal(const tensor t1, const tensor t2)
 {
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
 
 	uint32_t i;
-	if (t1->rank != t2->rank) return 0;
+	if (t1->rank != t2->rank) return false;
 	for (i = 0; i < t1->rank; i++) {
-		if (t1->size[i] != t2->size[i]) return 0;
+		if (t1->size[i] != t2->size[i]) return false;
 	}
 	for (i = 0; i < t1->num_elem; i++) {
-		if (DTYPE_NE(t1->elements[i], t2->elements[i])) return 0;
+		if (DTYPE_NE(t1->elements[i], t2->elements[i])) return false;
 	}
-	return 1;
+	return true;
 }
 
 uint8_t _tensor_check_size(const uint32_t *size, uint8_t rank)

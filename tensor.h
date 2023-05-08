@@ -6,8 +6,8 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
-#include <stdarg.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 /* Defining the datatype of the tensor */
 typedef float dtype;
@@ -39,8 +39,8 @@ typedef struct _tensor {
 tensor tensor_new(void);
 void tensor_destroy(tensor t);
 
-uint8_t tensor_is_empty(const tensor t);
-uint8_t tensor_is_equal(const tensor t1, const tensor t2);
+bool tensor_is_empty(const tensor t);
+bool tensor_is_equal(const tensor t1, const tensor t2);
 
 uint8_t _tensor_check_size(const uint32_t *size, uint8_t rank);
 uint8_t _tensor_set_size(tensor t, const uint32_t *size, uint8_t rank);
