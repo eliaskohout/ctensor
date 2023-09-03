@@ -37,7 +37,7 @@ $(OBJ_DIR_TESTS):
 $(OBJ_DIR_TESTS)/main.o: $(DIR_TESTS)/main.c | $(OBJ_DIR_TESTS)
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
-$(OBJ_DIR_TESTS)/test_tensor.o: $(DIR_TESTS)/test_tensor.c $(DIR_TESTS)/test_tensor.h | $(OBJ_DIR_TESTS)
+$(OBJ_DIR_TESTS)/tensor_test.o: $(DIR_TESTS)/tensor_test.c $(DIR_TESTS)/tensor_test.h | $(OBJ_DIR_TESTS)
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 

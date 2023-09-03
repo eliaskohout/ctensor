@@ -1,34 +1,6 @@
-#include "test_tensor.h"
-#include <stdint.h>
+#include "tensor_test.h"
 
-void test_tensor_run_all(void)
-{
-	int i;
-	void (*test_func[NUM_TEST_FUNC])(void) = {
-		&test_tensor_is_empty,
-		&test_tensor_is_equal,
-        &test_tensor_check_size,
-        &test_tensor_set_size,
-		&test_tensor_set,
-		&test_tensor_get,
-        &test_tensor_init_one,
-        &test_tensor_init_zero,
-        &test_tensor_init_rand,
-        &test_tensor_cpy,
-        &test_tensor_add_inplace,
-        &test_tensor_sub_inplace,
-        &test_tensor_add,
-        &test_tensor_sub,
-	};
-
-	printf("\n### Running tests... ###\n\n");
-	for(i = 0; i < NUM_TEST_FUNC; i++) {
-		test_func[i]();
-	}
-	printf("\n### %i functions tested. ###\n\n", NUM_TEST_FUNC);
-}
-
-void test_tensor_is_empty(void) 
+void tensor_test_is_empty(void) 
 {
 	/* Depends on tensor_init_zero */
 	uint32_t s[4] = {2, 5, 3, 7};
@@ -44,7 +16,7 @@ void test_tensor_is_empty(void)
 	tensor_destroy(t2);
 }
 
-void test_tensor_is_equal(void)
+void tensor_test_is_equal(void)
 {
 	/* Depends on tensor_cpy, tensor_is_equal, tensor_init_zero, tensor_init_rand */
 	uint32_t s[4] = {2, 5, 3, 7};
@@ -63,7 +35,7 @@ void test_tensor_is_equal(void)
 	tensor_destroy(t2);
 }
 
-void test_tensor_check_size(void)
+void tensor_test_check_size(void)
 {
     uint32_t size[] = {3, 2, 5, 0};
     tensor_assert(_tensor_check_size(size, 3), "(valid size declared as invalid)");
@@ -72,7 +44,7 @@ void test_tensor_check_size(void)
     tensor_assert(!_tensor_check_size(size, -3), "(rank should be non negative)");
 }
 
-void test_tensor_set_size(void)
+void tensor_test_set_size(void)
 {
     uint32_t size[] = {3, 2, 7};
 	tensor t = tensor_new();
@@ -83,7 +55,7 @@ void test_tensor_set_size(void)
 	tensor_destroy(t);
 }
 
-void test_tensor_set(void)
+void tensor_test_set(void)
 {
 	/* Depends on tensor_is_equal, tensor_init_zero, tensor_init_rand */
 	uint32_t s[4] = {2, 5, 3, 7};
@@ -109,7 +81,7 @@ void test_tensor_set(void)
 	tensor_destroy(t2);
 }
 
-void test_tensor_get(void)
+void tensor_test_get(void)
 {
 	/* Depends on tensor_is_equal, tensor_set, tensor_init_zero, tensor_init_rand */
 	bool status;
@@ -137,7 +109,7 @@ void test_tensor_get(void)
 	tensor_destroy(t2);
 }
 
-void test_tensor_init_one(void)
+void tensor_test_init_one(void)
 {
 	/* Depends on tensor_is_equal, tensor_set, tensor_init_rand */
 	uint32_t s[3] = {2, 5, 7};
@@ -161,7 +133,7 @@ void test_tensor_init_one(void)
 	tensor_destroy(t2);
 }
 
-void test_tensor_init_zero(void)
+void tensor_test_init_zero(void)
 {
 	/* Depends on tensor_is_equal, tensor_set, tensor_init_rand */
 	uint32_t s[3] = {2, 5, 7};
@@ -185,7 +157,7 @@ void test_tensor_init_zero(void)
 	tensor_destroy(t2);
 }
 
-void test_tensor_init_rand(void)
+void tensor_test_init_rand(void)
 {
 	/* Depends on tensor_is_equal, tensor_set, tensor_init_rand */
 	uint32_t s[3] = {2, 5, 7};
@@ -205,7 +177,7 @@ void test_tensor_init_rand(void)
 	tensor_destroy(t1);
 }
 
-void test_tensor_cpy(void)
+void tensor_test_cpy(void)
 {
     /* Depends on tensor_is_equal, tensor_init_one, tensor_init_zero */
 	uint32_t s[3] = {2, 5, 7};
@@ -222,22 +194,22 @@ void test_tensor_cpy(void)
 	tensor_destroy(t2);
 }
 
-void test_tensor_add_inplace(void)
+void tensor_test_add_inplace(void)
 {
     //TODO
 }
 
-void test_tensor_sub_inplace(void)
+void tensor_test_sub_inplace(void)
 {
     //TODO
 }
 
-void test_tensor_add(void)
+void tensor_test_add(void)
 {
     //TODO
 }
 
-void test_tensor_sub(void)
+void tensor_test_sub(void)
 {
     //TODO
 }
