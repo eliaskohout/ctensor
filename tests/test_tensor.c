@@ -23,12 +23,11 @@ void test_tensor_is_equal(void)
 	uint32_t s[4] = {2, 5, 3, 7};
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
-
-	tensor_init_zero(t1, 4, s);
-	tensor_init_one(t2, 4, s);
+	tensor_init_zero(t1, s, 4);
+	tensor_init_one(t2, s, 4);
 	tensor_assert_ne(t1, t2);
 
-	tensor_init_rand(t1, 4, s, 30);
+	tensor_init_rand(t1, s, 4, 30);
 	tensor_cpy(t2, t1);
 
 	tensor_assert_eq(t1, t2);
@@ -44,8 +43,8 @@ void test_tensor_set(void)
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
-	tensor_init_rand(t1, 4, s, 30);
-	tensor_init_zero(t2, 4, s);
+	tensor_init_rand(t1, s, 4, 30);
+	tensor_init_zero(t2, s, 4);
 
 	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
 		for (index[1] = 0; index[1] < s[1]; ++index[1]) {
@@ -70,8 +69,8 @@ void test_tensor_get(void)
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
-	tensor_init_rand(t1, 4, s, 30);
-	tensor_init_zero(t2, 4, s);
+	tensor_init_rand(t1, s, 4, 30);
+	tensor_init_zero(t2, s, 4);
 
 	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
 		for (index[1] = 0; index[1] < s[1]; ++index[1]) {
