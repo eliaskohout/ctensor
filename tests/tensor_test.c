@@ -196,21 +196,103 @@ void tensor_test_cpy(void)
 
 void tensor_test_add_inplace(void)
 {
-    //TODO
+    /* Depends on tensor_is_equal, tensor_init_one, tensor_set */
+	uint32_t s[3] = {3, 2, 4};
+	uint32_t index[3] = {0, 0, 0};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+	tensor t3 = tensor_new();
+
+    tensor_init_one(t1, s, 3);
+    tensor_init_one(t2, s, 3);
+    tensor_init_one(t3, s, 3);
+
+	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
+		for (index[1] = 0; index[1] < s[1]; ++index[1]) {
+			for (index[2] = 0; index[2] < s[2]; ++index[2]) {
+				tensor_assert(tensor_set(t1, index, index[0] + index[1] + index[2]), "mute");
+				tensor_assert(tensor_set(t2, index, (s[0] + s[1] + s[2]) - (index[0] + index[1] + index[2])), "mute");
+                tensor_assert(tensor_set(t3, index, (s[0] + s[1] + s[2])), "mute");
+			}
+		}
+	}
+
+    tensor_add_inplace(t1, t2);
+    tensor_assert_eq(t1, t3);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+	tensor_destroy(t3);
 }
 
 void tensor_test_sub_inplace(void)
 {
-    //TODO
+    /* Depends on tensor_is_equal, tensor_init_one, tensor_init_zero */
+	uint32_t s[3] = {3, 2, 4};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+	tensor t3 = tensor_new();
+
+    tensor_init_one(t1, s, 3);
+    tensor_init_one(t2, s, 3);
+    tensor_init_zero(t3, s, 3);
+
+    tensor_sub_inplace(t1, t2);
+    tensor_assert_eq(t1, t3);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+	tensor_destroy(t3);
 }
 
 void tensor_test_add(void)
 {
-    //TODO
+    /* Depends on tensor_is_equal, tensor_init_one, tensor_set */
+	uint32_t s[3] = {3, 2, 4};
+	uint32_t index[3] = {0, 0, 0};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+	tensor t3 = tensor_new();
+
+    tensor_init_one(t1, s, 3);
+    tensor_init_one(t2, s, 3);
+    tensor_init_one(t3, s, 3);
+
+	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
+		for (index[1] = 0; index[1] < s[1]; ++index[1]) {
+			for (index[2] = 0; index[2] < s[2]; ++index[2]) {
+				tensor_assert(tensor_set(t1, index, index[0] + index[1] + index[2]), "mute");
+				tensor_assert(tensor_set(t2, index, (s[0] + s[1] + s[2]) - (index[0] + index[1] + index[2])), "mute");
+                tensor_assert(tensor_set(t3, index, (s[0] + s[1] + s[2])), "mute");
+			}
+		}
+	}
+
+    tensor t4 = tensor_add(t1, t2);
+    tensor_assert_eq(t4, t3);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+	tensor_destroy(t3);
+	tensor_destroy(t4);
 }
 
 void tensor_test_sub(void)
 {
-    //TODO
-}
+    /* Depends on tensor_is_equal, tensor_init_one, tensor_init_zero */
+	uint32_t s[3] = {3, 2, 4};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+	tensor t3 = tensor_new();
 
+    tensor_init_one(t1, s, 3);
+    tensor_init_one(t2, s, 3);
+    tensor_init_zero(t3, s, 3);
+
+    tensor t4 = tensor_sub(t1, t2);
+    tensor_assert_eq(t4, t3);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+	tensor_destroy(t3);
+}

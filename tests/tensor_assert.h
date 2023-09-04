@@ -27,5 +27,7 @@
 #define tensor_assert_eq(X, Y)  tensor_assert(tensor_is_equal((X), (Y)), "(tensor_assert_eq)")
 #define tensor_assert_ne(X, Y)  tensor_assert(!tensor_is_equal((X), (Y)), "(tensor_assert_ne)")
 
+#include <stdio.h>
+#include <string.h>
 
 #endif // _TENSOR_ASSERT_H_INCLUDED_

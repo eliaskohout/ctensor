@@ -1,9 +1,6 @@
 #ifndef _TEST_TENSOR_H_INCLUDED_
 #define _TEST_TENSOR_H_INCLUDED_
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
 
 #include "../tensor.h"
 #include "tensor_assert.h"

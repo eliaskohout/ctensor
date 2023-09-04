@@ -1,4 +1,4 @@
-#include "tensoriterator.h"
+#include "tensoriter.h"
 
 tensoriter_scalar tensoriter_scalar_create(tensor t)
 {
