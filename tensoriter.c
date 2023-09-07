@@ -49,7 +49,7 @@ bool tensoriter_scalar_next(tensoriter_scalar it)
 	return true;
 }
 
-dtype *tensoriter_scalar_get(tensoriter_scalar it)
+dtype tensoriter_scalar_get(tensoriter_scalar it)
 {
     /* Gets the current value of the iterator.
      *
@@ -57,7 +57,18 @@ dtype *tensoriter_scalar_get(tensoriter_scalar it)
      *
      * @return A pointer to the current value
      */
-	return it->current;
+	return *(it->current);
+}
+
+void tensoriter_scalar_set(tensoriter_scalar it, dtype value)
+{
+    /* Sets the current value of the iterator.
+     *
+     * @param it The iterator to operate on
+     * @param value The value to insert
+     *
+     */
+	*(it->current) = value;
 }
 
 void tensoriter_scalar_map(tensoriter_scalar it, dtype (*func)(dtype))
@@ -69,8 +80,8 @@ void tensoriter_scalar_map(tensoriter_scalar it, dtype (*func)(dtype))
      * @param func The map function that is called
      */
 	do {
-		dtype *el = tensoriter_scalar_get(it);
-		*el = func(*el);
+		dtype x = tensoriter_scalar_get(it);
+		tensoriter_scalar_set(it, func(x));
 	} while(tensoriter_scalar_next(it));
 }
 
@@ -82,8 +93,8 @@ void tensoriter_scalar_map_add(tensoriter_scalar it, dtype scalar)
      * @param scalar The value to add
      */
 	do {
-        dtype* x = tensoriter_scalar_get(it);
-		*x = DTYPE_ADD(*x, scalar);
+        dtype x = tensoriter_scalar_get(it);
+		tensoriter_scalar_set(it, DTYPE_ADD(x, scalar));
 	} while(tensoriter_scalar_next(it));
 }
 
@@ -95,8 +106,8 @@ void tensoriter_scalar_map_sub(tensoriter_scalar it, dtype scalar)
      * @param scalar The value to subtract
      */
 	do {
-        dtype* x = tensoriter_scalar_get(it);
-		*x = DTYPE_SUB(*x, scalar);
+        dtype x = tensoriter_scalar_get(it);
+		tensoriter_scalar_set(it, DTYPE_SUB(x, scalar));
 	} while(tensoriter_scalar_next(it));
 }
 
@@ -108,8 +119,8 @@ void tensoriter_scalar_map_mul(tensoriter_scalar it, dtype scalar)
      * @param scalar The value to multiply
      */
 	do {
-        dtype* x = tensoriter_scalar_get(it);
-		*x = DTYPE_MUL(*x, scalar);
+        dtype x = tensoriter_scalar_get(it);
+		tensoriter_scalar_set(it, DTYPE_MUL(x, scalar));
 	} while(tensoriter_scalar_next(it));
 }
 
@@ -121,8 +132,8 @@ void tensoriter_scalar_map_div(tensoriter_scalar it, dtype scalar)
      * @param scalar The value to divide by
      */
 	do {
-        dtype* x = tensoriter_scalar_get(it);
-		*x = DTYPE_DIV(*x, scalar);
+        dtype x = tensoriter_scalar_get(it);
+		tensoriter_scalar_set(it, DTYPE_DIV(x, scalar));
 	} while(tensoriter_scalar_next(it));
 }
 

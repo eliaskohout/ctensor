@@ -12,7 +12,8 @@ tensoriter_scalar tensoriter_scalar_create(tensor t);
 void tensoriter_scalar_destroy(tensoriter_scalar it);
 
 bool tensoriter_scalar_next(tensoriter_scalar it);
-dtype *tensoriter_scalar_get(tensoriter_scalar it);
+dtype tensoriter_scalar_get(tensoriter_scalar it);
+void tensoriter_scalar_set(tensoriter_scalar it, dtype value);
 
 void tensoriter_scalar_map(tensoriter_scalar it, dtype (*func)(dtype));
 void tensoriter_scalar_map_add(tensoriter_scalar it, dtype scalar);

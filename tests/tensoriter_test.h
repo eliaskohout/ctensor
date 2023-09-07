@@ -7,6 +7,7 @@
 
 void tensoriter_test_scalar_next(void);
 void tensoriter_test_scalar_get(void);
+void tensoriter_test_scalar_set(void);
 void tensoriter_test_scalar_map(void);
 void tensoriter_test_scalar_map_add(void);
 void tensoriter_test_scalar_map_sub(void);

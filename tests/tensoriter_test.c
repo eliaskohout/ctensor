@@ -22,8 +22,8 @@ void tensoriter_test_scalar_next(void)
 void tensoriter_test_scalar_get(void)
 {
     /* Depends on tensor_init_one, tensor_set, tensoriter_scalar_next */
-	uint32_t s[4] = {2, 4, 4};
-	uint32_t index[4] = {0, 0, 0};
+	uint32_t s[3] = {2, 4, 4};
+	uint32_t index[3] = {0, 0, 0};
 	tensor t = tensor_new();
 
 	tensor_init_one(t, s, 3);
@@ -39,13 +39,32 @@ void tensoriter_test_scalar_get(void)
     uint32_t contained = 0;
     tensoriter_scalar iter = tensoriter_scalar_create(t);
     do {
-        uint32_t value = (uint32_t) *tensoriter_scalar_get(iter);
+        uint32_t value = (uint32_t) tensoriter_scalar_get(iter);
         tensor_assert(((1 << (value - 1)) & contained) == 0, "mute");
         contained |= 1 << (value - 1);
     } while (tensoriter_scalar_next(iter));
     tensor_assert((contained & 0) == 0, "(missed a value)");
 
     tensor_destroy(t);
+}
+
+void tensoriter_test_scalar_set(void) 
+{
+    /* Depends on tensor_init_one, tensor_init_rand, tensoriter_scalar_next */
+	uint32_t s[3] = {2, 4, 4};
+
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+
+    tensor_init_one(t1, s, 3);
+    tensor_init_rand(t2, s, 3, (dtype) 30);
+
+    tensoriter_scalar iter = tensoriter_scalar_create(t2);
+    do {
+        tensoriter_scalar_set(iter, DTYPE_ONE);
+    } while (tensoriter_scalar_next(iter));
+
+    tensor_assert_eq(t1, t2);
 }
 
 dtype tensoriter_test_scalar_map_helper(dtype d) {
@@ -61,8 +80,8 @@ dtype tensoriter_test_scalar_map_helper(dtype d) {
 void tensoriter_test_scalar_map(void)
 {
     /* Depends on tensor_init_one, tensor_init_zero, tensor_set*/
-	uint32_t s[4] = {2, 4, 4};
-	uint32_t index[4] = {0, 0, 0};
+	uint32_t s[3] = {2, 4, 4};
+	uint32_t index[3] = {0, 0, 0};
 	tensor t = tensor_new();
 	tensor t0 = tensor_new();
 
