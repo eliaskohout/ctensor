@@ -40,8 +40,10 @@ bool tensor_cpy(tensor t1, const tensor t2);
 
 bool tensor_add_inplace(tensor t1, const tensor t2);
 bool tensor_sub_inplace(tensor t1, const tensor t2);
+bool tensor_mul_inplace(tensor t1, const tensor t2);
 tensor tensor_add(const tensor t1, const tensor t2);
 tensor tensor_sub(const tensor t1, const tensor t2);
+tensor tensor_mul(const tensor t1, const tensor t2);
 
 void tensor_print(const tensor t);
 

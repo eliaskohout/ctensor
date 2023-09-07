@@ -274,7 +274,7 @@ bool tensor_cpy(tensor t1, const tensor t2)
 bool tensor_add_inplace(tensor t1, const tensor t2)
 {
     /* Adds the values of t2 onto the values of t1. t1 and t2 need to have the
-     * same size.
+     * same shape.
      *
      * @param t1 The tensor on which the values of t2 are added
      * @param t2 The tensor whose values are added
@@ -299,7 +299,7 @@ bool tensor_add_inplace(tensor t1, const tensor t2)
 bool tensor_sub_inplace(tensor t1, const tensor t2)
 {
     /* Subtracts the values of t2 from the values of t1. t1 and t2 need to have
-     * the same size.
+     * the same shape.
      *
      * @param t1 The tensor from which the values of t2 are subtracted
      * @param t2 The tensor whose values are subtracted
@@ -321,9 +321,35 @@ bool tensor_sub_inplace(tensor t1, const tensor t2)
 	return true;
 }
 
+bool tensor_mul_inplace(tensor t1, const tensor t2) 
+{
+    /* Multiplies the values of t2 onto t1 element wise. t1 and t2 need to 
+     * have the same shape.
+     * 
+     * @param t1 The tensor to multiply onto
+     * @param t2 The tensor to multiply with
+     *
+     * @return true when successful, false otherwise
+     */
+	assert(!tensor_is_empty(t1));
+	assert(!tensor_is_empty(t2));
+    
+	uint32_t i;
+
+	if(t1->rank != t2->rank) return false;
+	for(i = 0; i < t1->rank; i++) {
+		if(t1->size[i] != t2->size[i]) return false;
+	}
+	for(i = 0; i < t1->num_elem; i++) {
+		t1->elements[i] = DTYPE_MUL(t1->elements[i], t2->elements[i]);
+	}
+	return true;
+}
+
 tensor tensor_add(const tensor t1, const tensor t2)
 {
-    /* Adds to tensors returning the result as a tensor.
+    /* Adds two tensors returning the result as a tensor. t1 and t2 need to
+     * have the same shape.
      * 
      * @param t1 The first tensor to add
      * @param t2 The second tensor to add
@@ -342,7 +368,8 @@ tensor tensor_add(const tensor t1, const tensor t2)
 
 tensor tensor_sub(const tensor t1, const tensor t2)
 {
-    /* Subtracts to tensors returning the result as a tensor.
+    /* Subtracts two tensors returning the result as a tensor. t1 and t2 need
+     * to have the same shape.
      * 
      * @param t1 The tensor to subtract from
      * @param t2 The tensor that is subtracted
@@ -357,7 +384,27 @@ tensor tensor_sub(const tensor t1, const tensor t2)
 	if (!tensor_cpy(t3, t1)) return NULL;
 	if (!tensor_sub_inplace(t3, t2)) return NULL;
 	return t3;
+}
 
+
+tensor tensor_mul(const tensor t1, const tensor t2)
+{
+    /* Multiplies two tensors element wise returning the result as a tensor.
+     * t1 and t2 need to have the same shape.
+     * 
+     * @param t1 The first tensor to multipy
+     * @param t2 The second tensor to multipy
+     *
+     * @return The result of the operation, NULL if an error occurs
+     */
+	assert(!tensor_is_empty(t1));
+	assert(!tensor_is_empty(t2));
+
+	tensor t3 = tensor_new();
+	if(t3 == NULL) return NULL;
+	if (!tensor_cpy(t3, t1)) return NULL;
+	if (!tensor_mul_inplace(t3, t2)) return NULL;
+	return t3;
 }
 
 void tensor_print(const tensor t)
