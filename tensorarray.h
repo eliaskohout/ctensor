@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "dtype.h"
 
-inline bool tarray_equals(dtype* a1, dtype* a2, uint32_t len);
-inline bool tarray_uint32_equals(uint32_t* a1, uint32_t* a2, uint32_t len);
+inline bool tarray_equals(const dtype* a1, const dtype* a2, uint32_t len);
+inline bool tarray_uint32_equals(const uint32_t* a1, const uint32_t* a2, uint32_t len);
 
 #endif // _TENSORARRAY_H_INCLUDED_
