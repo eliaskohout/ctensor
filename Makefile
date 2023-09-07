@@ -13,31 +13,27 @@ test: $(TARGET)/test
 
 build: $(TARGET)/ctensor.o
 
-$(TARGET)/test: $(FILES_TEST) $(TARGET)/ctensor.o
+$(TARGET)/test: $(FILES_TEST) $(TARGET)/ctensor.o | dirs
 	$(CC) $(LD_FLAGS) $^ -o $@
 
 $(TARGET)/ctensor.o: $(FILES)
 	ld $(LD_FLAGS) -r $^ -o $@
 
+dirs: 
+	mkdir -p $(TARGET)/build/$(DIR_TESTS)
 
 # --- Source ---
-$(TARGET)/build:
-	mkdir -p $@
-
-$(TARGET)/build/%.o: %.c %.h | $(TARGET)/build
+$(TARGET)/build/%.o: %.c %.h | dirs
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 
 # --- Tests ---
 OBJ_DIR_TESTS = $(TARGET)/build/$(DIR_TESTS)
 
-$(OBJ_DIR_TESTS):
-	mkdir -p $@
-
-$(OBJ_DIR_TESTS)/main.o: $(DIR_TESTS)/main.c $(DIR_TESTS)/main.h | $(OBJ_DIR_TESTS)
+$(OBJ_DIR_TESTS)/main.o: $(DIR_TESTS)/main.c $(DIR_TESTS)/main.h | dirs
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
-$(OBJ_DIR_TESTS)/tensor_test.o: $(DIR_TESTS)/tensor_test.c $(DIR_TESTS)/tensor_test.h | $(OBJ_DIR_TESTS)
+$(OBJ_DIR_TESTS)/tensor_test.o: $(DIR_TESTS)/tensor_test.c $(DIR_TESTS)/tensor_test.h | dirs
 	$(CC) $(CC_FLAGS) -c $< -o $@
 
 

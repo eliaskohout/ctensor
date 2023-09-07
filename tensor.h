@@ -2,6 +2,7 @@
 #define _TENSOR_H_INCLUDED_
 
 #include "dtype.h"
+#include "tensorarray.h"
 
 #include <stdlib.h>
 #include <stdio.h>
