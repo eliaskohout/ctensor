@@ -23,8 +23,12 @@ void tensor_test_run_all(void)
         &tensor_test_cpy,
         &tensor_test_add_inplace,
         &tensor_test_sub_inplace,
+        &tensor_test_mul_inplace,
+        &tensor_test_div_inplace,
         &tensor_test_add,
         &tensor_test_sub,
+        &tensor_test_mul,
+        &tensor_test_div,
 	};
 
 	printf("\n### Running tests for tensor.c ... ###\n\n");

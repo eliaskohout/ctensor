@@ -26,7 +26,7 @@ void tensor_test_is_equal(void)
 	tensor_init_one(t2, s, 4);
 	tensor_assert_ne(t1, t2);
 
-	tensor_init_rand(t1, s, 4, 30);
+	tensor_init_rand(t1, s, 4, (dtype) 30);
 	tensor_cpy(t2, t1);
 
 	tensor_assert_eq(t1, t2);
@@ -63,7 +63,7 @@ void tensor_test_set(void)
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
-	tensor_init_rand(t1, s, 4, 30);
+	tensor_init_rand(t1, s, 4, (dtype) 30);
 	tensor_init_zero(t2, s, 4);
 
 	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
@@ -90,7 +90,7 @@ void tensor_test_get(void)
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
-	tensor_init_rand(t1, s, 4, 30);
+	tensor_init_rand(t1, s, 4, (dtype) 30);
 	tensor_init_zero(t2, s, 4);
 
 	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
@@ -117,7 +117,7 @@ void tensor_test_init_one(void)
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
-	tensor_init_rand(t1, s, 3, 30);
+	tensor_init_rand(t1, s, 3, (dtype) 30);
 	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
 		for (index[1] = 0; index[1] < s[1]; ++index[1]) {
 			for (index[2] = 0; index[2] < s[2]; ++index[2]) {
@@ -141,7 +141,7 @@ void tensor_test_init_zero(void)
 	tensor t1 = tensor_new();
 	tensor t2 = tensor_new();
 
-	tensor_init_rand(t1, s, 3, 30);
+	tensor_init_rand(t1, s, 3, (dtype) 30);
 	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
 		for (index[1] = 0; index[1] < s[1]; ++index[1]) {
 			for (index[2] = 0; index[2] < s[2]; ++index[2]) {
@@ -164,7 +164,7 @@ void tensor_test_init_rand(void)
 	uint32_t index[3] = {0, 0, 0};
 	tensor t1 = tensor_new();
 
-	tensor_assert(tensor_init_rand(t1, s, 3, 30), "(there should be no error when initing)");
+	tensor_assert(tensor_init_rand(t1, s, 3, (dtype) 30), "(there should be no error when initing)");
 
 	for (index[0] = 0; index[0] < s[0]; ++index[0]) {
 		for (index[1] = 0; index[1] < s[1]; ++index[1]) {
@@ -245,6 +245,48 @@ void tensor_test_sub_inplace(void)
 	tensor_destroy(t3);
 }
 
+void tensor_test_mul_inplace(void)
+{
+    /* Depends on tensor_is_equal, tensor_init_one, tensor_init_zero */
+	uint32_t s[3] = {3, 2, 4};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+
+    tensor_init_rand(t1, s, 3, (dtype) 30);
+    tensor_init_zero(t2, s, 3);
+
+    tensor_mul_inplace(t1, t2);
+    tensor_assert_eq(t1, t2);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+}
+
+void tensor_test_div_inplace(void)
+{
+    /* Depends on tensor_is_equal, tensor_init_one, tensor_init_zero, tensor_add_inplace */
+	uint32_t s[3] = {3, 2, 4};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+	tensor t3 = tensor_new();
+
+    tensor_init_one(t1, s, 3);
+    tensor_init_one(t2, s, 3);
+    tensor_init_one(t3, s, 3);
+
+    tensor_add_inplace(t1, t3);
+    tensor_add_inplace(t1, t3);
+    tensor_add_inplace(t2, t3);
+    tensor_add_inplace(t2, t3);
+
+    tensor_div_inplace(t1, t2);
+    tensor_assert_eq(t1, t3);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+	tensor_destroy(t3);
+}
+
 void tensor_test_add(void)
 {
     /* Depends on tensor_is_equal, tensor_init_one, tensor_set */
@@ -295,4 +337,52 @@ void tensor_test_sub(void)
 	tensor_destroy(t1);
 	tensor_destroy(t2);
 	tensor_destroy(t3);
+	tensor_destroy(t4);
+}
+
+void tensor_test_mul(void)
+{
+    /* Depends on tensor_is_equal, tensor_init_rand, tensor_init_zero */
+	uint32_t s[3] = {3, 2, 4};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+	tensor t3 = tensor_new();
+
+    tensor_init_rand(t1, s, 3, (dtype) 100);
+    tensor_init_zero(t2, s, 3);
+    tensor_init_zero(t3, s, 3);
+
+    tensor t4 = tensor_mul(t1, t2);
+    tensor_assert_eq(t4, t3);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+	tensor_destroy(t3);
+	tensor_destroy(t4);
+}
+
+void tensor_test_div(void)
+{
+    /* Depends on tensor_is_equal, tensor_init_one, tensor_init_zero, tensor_add_inplace */
+	uint32_t s[3] = {3, 2, 4};
+	tensor t1 = tensor_new();
+	tensor t2 = tensor_new();
+	tensor t3 = tensor_new();
+
+    tensor_init_one(t1, s, 3);
+    tensor_init_one(t2, s, 3);
+    tensor_init_one(t3, s, 3);
+
+    tensor_add_inplace(t1, t3);
+    tensor_add_inplace(t1, t3);
+    tensor_add_inplace(t2, t3);
+    tensor_add_inplace(t2, t3);
+
+    tensor t4 = tensor_div(t1, t2);
+    tensor_assert_eq(t4, t3);
+
+	tensor_destroy(t1);
+	tensor_destroy(t2);
+	tensor_destroy(t3);
+	tensor_destroy(t4);
 }

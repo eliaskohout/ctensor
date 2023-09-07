@@ -5,7 +5,7 @@
 #include "tensor_test.h"
 #include "tensoriter_test.h"
 
-#define NUM_TENSOR_TEST_FUNC 14
+#define NUM_TENSOR_TEST_FUNC 18
 #define NUM_TENSORITER_TEST_FUNC 7
 
 
