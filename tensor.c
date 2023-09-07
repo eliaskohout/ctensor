@@ -18,7 +18,7 @@ void tensor_destroy(tensor t)
 	if (!tensor_is_empty(t)) {
 		free(t->size);
 		free(t->elements);
-		free(t->index_offsets);
+		free(t->stride);
 	}
 	free(t);
 }
@@ -87,42 +87,40 @@ bool _tensor_set_size(tensor t, const uint32_t *size, uint8_t rank)
      */
 
 	uint32_t *temp_size;
-	uint32_t *temp_index_offset;
+	uint32_t *temp_stride;
 	dtype *temp_elements;
-	uint8_t i, j;
+	uint8_t i;
 	uint32_t num_elem = 1;
 
 	if(!_tensor_check_size(size, rank)) return false;
 
-	/* Try allocating memory for the size/ index_offset array of the tensor */
+	/* Try allocating memory for the size/ stride array of the tensor */
 	for(i = 0; i < rank; i++) {
 		num_elem *= size[i];
 	}
 	temp_size = malloc(rank * sizeof(uint32_t));
-	temp_index_offset = malloc(rank * sizeof(uint32_t));
+	temp_stride = malloc(rank * sizeof(uint32_t));
 	temp_elements = malloc(num_elem * sizeof(dtype));
-	if((temp_size == NULL && rank != 0) || (temp_index_offset == NULL && rank != 0) || temp_elements == NULL) {
+	if((temp_size == NULL && rank != 0) || (temp_stride == NULL && rank != 0) || temp_elements == NULL) {
 		free(temp_size);
-		free(temp_index_offset);
+		free(temp_stride);
 		return false;
 	}
 
 	/* Freeing old memory. */
 	free(t->size);
-	free(t->index_offsets);
+	free(t->stride);
 	free(t->elements);
 
 	/* Setting the size array */
 	t->size = temp_size;
 	if(rank != 0) memcpy(t->size, size, rank * sizeof(uint32_t));
 	t->rank = rank;
-	/* Setting the index_offset array */
-	t->index_offsets = temp_index_offset;
-	for(i = 0; i < t->rank; i++) {
-		t->index_offsets[i] = 1;
-		for(j = i + 1; j < t->rank; j++) {
-			t->index_offsets[i] *= t->size[j];
-		}
+	/* Setting the stride array */
+	t->stride = temp_stride;
+	t->stride[0] = 1;
+	for(i = 1; i < t->rank; i++) {
+		t->stride[i] = t->stride[i - 1] * t->size[i - 1];
 	}
 	/* Setting the elements pointer and memory usage */
 	t->elements = temp_elements;
@@ -154,7 +152,7 @@ bool tensor_set(tensor t, const uint32_t *index, dtype val)
 
 	for(i = 0; i < t->rank; i++) {
 		if(t->size[i] <= index[i]) return false;
-		offset += t->index_offsets[i] * index[i];
+		offset += t->stride[i] * index[i];
 	}
 
 	t->elements[offset] = val;
@@ -185,7 +183,7 @@ dtype tensor_get(const tensor t, const uint32_t *index, bool *success)
 			if(success != NULL) *success = false;
 			return DTYPE_ZERO;
 		}
-		offset += t->index_offsets[i] * index[i];
+		offset += t->stride[i] * index[i];
 	}
 
 	if(success != NULL) *success = true;

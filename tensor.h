@@ -16,7 +16,7 @@ typedef struct _tensor {
 	dtype *elements;
 	uint8_t rank;
 	uint32_t *size;
-	uint32_t *index_offsets;
+	uint32_t *stride;
 	uint32_t num_elem;
 } *tensor;
 
