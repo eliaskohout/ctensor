@@ -361,8 +361,14 @@ tensor tensor_add(const tensor t1, const tensor t2)
 
 	tensor t3 = tensor_new();
 	if(t3 == NULL) return NULL;
-	if (!tensor_cpy(t3, t1)) return NULL;
-	if (!tensor_add_inplace(t3, t2)) return NULL;
+	if (!tensor_cpy(t3, t1)) {
+        tensor_destroy(t3);
+        return NULL;
+    }
+	if (!tensor_add_inplace(t3, t2)) {
+        tensor_destroy(t3);
+        return NULL;
+    }
 	return t3;
 }
 
@@ -381,8 +387,14 @@ tensor tensor_sub(const tensor t1, const tensor t2)
 
 	tensor t3 = tensor_new();
 	if(t3 == NULL) return NULL;
-	if (!tensor_cpy(t3, t1)) return NULL;
-	if (!tensor_sub_inplace(t3, t2)) return NULL;
+	if (!tensor_cpy(t3, t1)) {
+        tensor_destroy(t3);
+        return NULL;
+    }
+	if (!tensor_sub_inplace(t3, t2)) {
+        tensor_destroy(t3);
+        return NULL;
+    }
 	return t3;
 }
 
@@ -402,8 +414,14 @@ tensor tensor_mul(const tensor t1, const tensor t2)
 
 	tensor t3 = tensor_new();
 	if(t3 == NULL) return NULL;
-	if (!tensor_cpy(t3, t1)) return NULL;
-	if (!tensor_mul_inplace(t3, t2)) return NULL;
+	if (!tensor_cpy(t3, t1)) {
+        tensor_destroy(t3);
+        return NULL;
+    }
+	if (!tensor_mul_inplace(t3, t2)) {
+        tensor_destroy(t3);
+        return NULL;
+    }
 	return t3;
 }
 
