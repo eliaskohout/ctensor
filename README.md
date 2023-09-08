@@ -5,6 +5,7 @@ A simple C library implementing tensors. Still in development. Currently it only
 ```
 ├── LICENSE
 ├── Makefile
+├── README.md
 ├── dtype.h
 ├── tensor.c
 ├── tensor.h
