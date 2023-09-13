@@ -42,7 +42,6 @@ A simple C library implementing tensors. Still in development. Currently it only
 
 ## TODOs
 
-- [ ] Ensure iterators iterate over same size tensors in the same order
 - [ ] Making all functions work with random strides
 - [ ] Adding a function for normalising strides
 - [ ] Implementing dot product
