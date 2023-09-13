@@ -39,7 +39,9 @@ void tensoriter_test_scalar_get(void)
     uint32_t contained = 0;
     tensoriter_scalar iter = tensoriter_scalar_create(t);
     do {
-        uint32_t value = (uint32_t) tensoriter_scalar_get(iter);
+        bool success;
+        uint32_t value = (uint32_t) tensoriter_scalar_get(iter, &success);
+        tensor_assert(success, "mute");
         tensor_assert(((1 << (value - 1)) & contained) == 0, "mute");
         contained |= 1 << (value - 1);
     } while (tensoriter_scalar_next(iter));
