@@ -21,7 +21,6 @@ typedef struct _tensor {
 	uint32_t num_elem;
 } *tensor;
 
-
 tensor tensor_new(void);
 void tensor_destroy(tensor t);
 
@@ -38,15 +37,6 @@ bool tensor_init_one(tensor t, const uint32_t *size, uint8_t rank);
 bool tensor_init_zero(tensor t, const uint32_t *size, uint8_t rank);
 bool tensor_init_rand(tensor t, const uint32_t *size, uint8_t rank, dtype max);
 bool tensor_cpy(tensor t1, const tensor t2);
-
-bool tensor_add_inplace(tensor t1, const tensor t2);
-bool tensor_sub_inplace(tensor t1, const tensor t2);
-bool tensor_mul_inplace(tensor t1, const tensor t2);
-bool tensor_div_inplace(tensor t1, const tensor t2);
-tensor tensor_add(const tensor t1, const tensor t2);
-tensor tensor_sub(const tensor t1, const tensor t2);
-tensor tensor_mul(const tensor t1, const tensor t2);
-tensor tensor_div(const tensor t1, const tensor t2);
 
 void tensor_print(const tensor t);
 

@@ -42,6 +42,8 @@ A simple C library implementing tensors. Still in development. Currently it only
 
 ## TODOs
 
+- [ ] Adding DTYPE_COPY macro
+- [ ] Make elementwise operations run in parallel
 - [ ] Making all functions work with random strides
 - [ ] Adding a function for normalising strides
 - [ ] Implementing dot product
