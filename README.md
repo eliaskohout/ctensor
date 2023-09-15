@@ -11,16 +11,16 @@ A simple C library implementing tensors. Still in development. Currently it only
 ├── tensor.h
 ├── tensorarray.c
 ├── tensorarray.h
-├── tensoriter.c
-├── tensoriter.h
+├── tensorfunc.c
+├── tensorfunc.h
 └── tests
     ├── main.c
     ├── main.h
     ├── tensor_assert.h
     ├── tensor_test.c
     ├── tensor_test.h
-    ├── tensoriter_test.c
-    └── tensoriter_test.h
+    ├── tensorfunc_test.c
+    └── tensorfunc_test.h
 ```
 
 `dtype.h` _The file that defines the data type for the contents of the tensor. The default is float._
@@ -33,9 +33,9 @@ A simple C library implementing tensors. Still in development. Currently it only
 
 `tensorarray.h` _The header file for tensorarray.c._
 
-`tensoriter.c` _The file for iterators over tensors and map functions._
+`tensorfunc.c` _The file for iterators over tensors and map functions._
 
-`tensoriter.h` _The header file for tensoriter.c._
+`tensorfunc.h` _The header file for tensorfunc.c._
 
 `tests` _The directory containing the unit tests._
 
