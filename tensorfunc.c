@@ -86,6 +86,12 @@ void tensor_combine_inplace(tensor t1, const tensor t2, dtype (*func)(dtype, dty
 
 }
 
+dtype _dtype_scalar_helper;
+dtype _tensor_add_scalar_helper(dtype x) { return DTYPE_ADD(x, _dtype_scalar_helper); }
+dtype _tensor_sub_scalar_helper(dtype x) { return DTYPE_SUB(x, _dtype_scalar_helper); }
+dtype _tensor_mul_scalar_helper(dtype x) { return DTYPE_MUL(x, _dtype_scalar_helper); }
+dtype _tensor_div_scalar_helper(dtype x) { return DTYPE_DIV(x, _dtype_scalar_helper); }
+
 void tensor_add_scalar(tensor t, dtype scalar)
 {
     /* Adds a fixed scalar value to all the values of a tensor.
@@ -93,7 +99,8 @@ void tensor_add_scalar(tensor t, dtype scalar)
      * @param t The tensor to operate on
      * @param scalar The value to add
      */
-    // TODO
+    _dtype_scalar_helper = scalar;
+    tensor_map_inplace(t, &_tensor_add_scalar_helper);
 }
 
 void tensor_sub_scalar(tensor t, dtype scalar)
@@ -103,7 +110,8 @@ void tensor_sub_scalar(tensor t, dtype scalar)
      * @param t The tensor to operate on
      * @param scalar The value to subtract
      */
-    // TODO
+    _dtype_scalar_helper = scalar;
+    tensor_map_inplace(t, &_tensor_sub_scalar_helper);
 }
 
 void tensor_mul_scalar(tensor t, dtype scalar)
@@ -113,7 +121,8 @@ void tensor_mul_scalar(tensor t, dtype scalar)
      * @param t The tensor to operate on
      * @param scalar The value to multiply
      */
-    // TODO
+    _dtype_scalar_helper = scalar;
+    tensor_map_inplace(t, &_tensor_mul_scalar_helper);
 }
 
 void tensor_div_scalar(tensor t, dtype scalar)
@@ -123,7 +132,8 @@ void tensor_div_scalar(tensor t, dtype scalar)
      * @param t The tensor to operate on
      * @param scalar The value to divide by
      */
-    // TODO
+    _dtype_scalar_helper = scalar;
+    tensor_map_inplace(t, &_tensor_mul_scalar_helper);
 }
 
 void tensor_add_inplace(tensor t1, const tensor t2)
