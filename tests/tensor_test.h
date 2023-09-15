@@ -1,7 +1,6 @@
 #ifndef _TEST_TENSOR_H_INCLUDED_
 #define _TEST_TENSOR_H_INCLUDED_
 
-
 #include "../tensor.h"
 #include "tensor_assert.h"
 
@@ -16,13 +15,5 @@ void tensor_test_init_one(void);
 void tensor_test_init_zero(void);
 void tensor_test_init_rand(void);
 void tensor_test_cpy(void);
-void tensor_test_add_inplace(void);
-void tensor_test_sub_inplace(void);
-void tensor_test_mul_inplace(void);
-void tensor_test_div_inplace(void);
-void tensor_test_add(void);
-void tensor_test_sub(void);
-void tensor_test_mul(void);
-void tensor_test_div(void);
 
 #endif // _TEST_TENSOR_H_INCLUDED_

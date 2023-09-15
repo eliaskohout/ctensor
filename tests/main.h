@@ -3,13 +3,13 @@
 
 
 #include "tensor_test.h"
-#include "tensoriter_test.h"
+#include "tensorfunc_test.h"
 
-#define NUM_TENSOR_TEST_FUNC 18
-#define NUM_TENSORITER_TEST_FUNC 8
+#define NUM_TENSOR_TEST_FUNC 10
+#define NUM_TENSORFUNC_TEST_FUNC 18
 
 
 void tensor_test_run_all(void);
-void tensoriter_test_run_all(void);
+void tensorfunc_test_run_all(void);
 
 #endif // _MAIN_H_INCLUDED_
