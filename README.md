@@ -44,11 +44,12 @@ A simple C library implementing tensors. Still in development. Currently it only
 
 - [ ] Adding DTYPE_COPY macro
 - [ ] Make elementwise operations run in parallel
-- [ ] Making all functions work with random strides
+- [ ] Making all functions work with random strides (print too)
 - [ ] Adding a function for normalising strides
 - [ ] Implementing dot product
 - [ ] Implementing cross product
 - [ ] Adding error codes
+- [ ] Testing error handling for all functions
 - [ ] Adding ability for persistently saving tensors to disk and loading them
-- [ ] Adding views of tensor
+- [ ] Adding views of tensor and test them for all functions
 - [ ] Implementing functions for transposing tensors
