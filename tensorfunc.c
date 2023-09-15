@@ -9,7 +9,10 @@ void tensor_fill(tensor t, dtype (*func)(void))
      *      no sidel effects.
      */
 	assert(!tensor_is_empty(t));
-    // TODO
+
+    for (uint32_t i = 0; i < t->num_elem; i++) {
+        t->elements[i] = func();
+    }
 }
 
 void tensor_inspect(const tensor t, void (*func)(dtype))
@@ -20,7 +23,10 @@ void tensor_inspect(const tensor t, void (*func)(dtype))
      * @param func The function that is called with the values
      */
 	assert(!tensor_is_empty(t));
-    // TODO
+
+    for (uint32_t i = 0; i < t->num_elem; i++) {
+        func(t->elements[i]);
+    }
 }
 
 tensor tensor_map(const tensor t, dtype (*func)(dtype))
@@ -32,10 +38,20 @@ tensor tensor_map(const tensor t, dtype (*func)(dtype))
      * @param func The map function that is called, it is expected to have no
      *      side effects
      *
-     * @return The newly created tensor
+     * @return The newly created tensor, if it fails NULL is returned
      */
 	assert(!tensor_is_empty(t));
-    // TODO
+    
+    tensor t2 = tensor_new();
+    if(t2 == NULL || !_tensor_set_size(t2, t->size, t->rank)) {
+            tensor_destroy(t2);
+            return NULL;
+    }
+
+    for (uint32_t i = 0; i < t->num_elem; i++) {
+        t2->elements[i] = func(t->elements[i]);
+    }
+    return t2;
 }
 
 void tensor_map_inplace(tensor t, dtype (*func)(dtype))
@@ -48,7 +64,10 @@ void tensor_map_inplace(tensor t, dtype (*func)(dtype))
      *      side effects
      */
 	assert(!tensor_is_empty(t));
-    // TODO
+
+    for (uint32_t i = 0; i < t->num_elem; i++) {
+        t->elements[i] = func(t->elements[i]);
+    }
 }
 
 tensor tensor_combine(const tensor t1, const tensor t2, dtype (*func)(dtype, dtype))
@@ -62,14 +81,30 @@ tensor tensor_combine(const tensor t1, const tensor t2, dtype (*func)(dtype, dty
      *      returns the result that is stored in the created tensor, it is
      *      expected to have no side effects
      *
-     * @return The tensor with the result of the combination of t1 and t2
+     * @return The tensor with the result of the combination of t1 and t2, if an
+     *      error occurs NULL is returned
      */
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
-    // TODO
+
+    tensor t3;
+
+	if (t1->rank != t2->rank) return NULL;
+    if (!tarray_uint32_equals(t1->size, t2->size, t1->rank)) return NULL;
+    
+    t3 = tensor_new();
+    if(t3 == NULL || !_tensor_set_size(t3, t1->size, t1->rank)) {
+            tensor_destroy(t2);
+            return NULL;
+    }
+
+    for (uint32_t i = 0; i < t1->num_elem; i++) {
+        t3->elements[i] = func(t1->elements[i], t2->elements[i]);
+    }
+    return t3;
 }
 
-void tensor_combine_inplace(tensor t1, const tensor t2, dtype (*func)(dtype, dtype))
+bool tensor_combine_inplace(tensor t1, const tensor t2, dtype (*func)(dtype, dtype))
 {
     /* Combines every value of two tensor and stores the result in the first of
      * the tensors. t1 and t2 need to have the same shape.
@@ -79,11 +114,19 @@ void tensor_combine_inplace(tensor t1, const tensor t2, dtype (*func)(dtype, dty
      * @param func The function that takes in the values of t1 and t2 and
      *      returns the result that is stored in t1, it is expected to have
      *      no side effects
+     *
+     * @return true if the operation was successful, false otherwise
      */
 	assert(!tensor_is_empty(t1));
 	assert(!tensor_is_empty(t2));
-    // TODO
 
+	if (t1->rank != t2->rank) return false;
+    if (!tarray_uint32_equals(t1->size, t2->size, t1->rank)) return false;
+
+    for (uint32_t i = 0; i < t1->num_elem; i++) {
+        t1->elements[i] = func(t1->elements[i], t2->elements[i]);
+    }
+    return true;
 }
 
 dtype _dtype_scalar_helper;
@@ -136,48 +179,61 @@ void tensor_div_scalar(tensor t, dtype scalar)
     tensor_map_inplace(t, &_tensor_mul_scalar_helper);
 }
 
-void tensor_add_inplace(tensor t1, const tensor t2)
+dtype _tensor_add_helper(dtype x, dtype y) { return DTYPE_ADD(x, y); }
+dtype _tensor_sub_helper(dtype x, dtype y) { return DTYPE_SUB(x, y); }
+dtype _tensor_mul_helper(dtype x, dtype y) { return DTYPE_MUL(x, y); }
+dtype _tensor_div_helper(dtype x, dtype y) { return DTYPE_DIV(x, y); }
+
+bool tensor_add_inplace(tensor t1, const tensor t2)
 {
     /* Adds the values of t2 onto the values of t1. t1 and t2 need to have the
      * same shape.
      *
      * @param t1 The tensor on which the values of t2 are added
      * @param t2 The tensor whose values are added
+     *
+     * @return true if the operation was successful, false otherwise
      */
-    // TODO
+    return tensor_combine_inplace(t1, t2, &_tensor_add_helper);
 }
 
-void tensor_sub_inplace(tensor t1, const tensor t2)
+bool tensor_sub_inplace(tensor t1, const tensor t2)
 {
     /* Subtracts the values of t2 from the values of t1. t1 and t2 need to have
      * the same shape.
      *
      * @param t1 The tensor from which the values of t2 are subtracted
      * @param t2 The tensor whose values are subtracted
+     *
+     * @return true if the operation was successful, false otherwise
      */
-    // TODO
+    return tensor_combine_inplace(t1, t2, &_tensor_sub_helper);
 }
 
-void tensor_mul_inplace(tensor t1, const tensor t2)
+bool tensor_mul_inplace(tensor t1, const tensor t2)
 {
     /* Multiplies the values of t2 onto t1 element wise. t1 and t2 need to 
      * have the same shape.
      * 
      * @param t1 The tensor to multiply onto
      * @param t2 The tensor to multiply with
+     *
+     * @return true if the operation was successful, false otherwise
      */
-    // TODO
+    return tensor_combine_inplace(t1, t2, &_tensor_mul_helper);
 }
 
-void tensor_div_inplace(tensor t1, const tensor t2)
+bool tensor_div_inplace(tensor t1, const tensor t2)
 {
     /* Divides the values of t2 by the values of t1 element wise. t1 and t2 
      * need to have the same shape.
      * 
      * @param t1 The tensor to devide
      * @param t2 The tensor to devide by
+     *
+     * @return true if the operation was successful, false otherwise
      */
-    // TODO
+    return tensor_combine_inplace(t1, t2, &_tensor_div_helper);
 }
 
 tensor tensor_add(const tensor t1, const tensor t2)
@@ -190,7 +246,7 @@ tensor tensor_add(const tensor t1, const tensor t2)
      *
      * @return The result of the operation, NULL if an error occurs
      */
-    // TODO
+    return tensor_combine(t1, t2, &_tensor_add_helper);
 }
 
 tensor tensor_sub(const tensor t1, const tensor t2)
@@ -203,7 +259,7 @@ tensor tensor_sub(const tensor t1, const tensor t2)
      *
      * @return The result of the operation, NULL if an error occurs
      */
-    // TODO
+    return tensor_combine(t1, t2, &_tensor_sub_helper);
 }
 
 tensor tensor_mul(const tensor t1, const tensor t2)
@@ -216,7 +272,7 @@ tensor tensor_mul(const tensor t1, const tensor t2)
      *
      * @return The result of the operation, NULL if an error occurs
      */
-    // TODO
+    return tensor_combine(t1, t2, &_tensor_mul_helper);
 }
 
 tensor tensor_div(const tensor t1, const tensor t2)
@@ -229,5 +285,5 @@ tensor tensor_div(const tensor t1, const tensor t2)
      *
      * @return The result of the operation, NULL if an error occurs
      */
-    // TODO
+    return tensor_combine(t1, t2, &_tensor_div_helper);
 }

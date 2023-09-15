@@ -4,7 +4,8 @@ tensor tensor_new(void)
 {
     /* Creates a new tensor struct and returns it.
      *
-     * @return A tensor (pointer to memory for a _tensor struct)
+     * @return A tensor (pointer to memory for a _tensor struct), if an error
+     *      occurs NULL is returned
      */
 	return calloc(1, sizeof(struct _tensor));
 }

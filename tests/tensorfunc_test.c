@@ -105,7 +105,7 @@ void tensor_test_sub_scalar(void)
     tensor_add_inplace(t1, t2);
     tensor_add_inplace(t1, t2);
 
-    tensor_sub_scalar(t3, 3.0);
+    tensor_sub_scalar(t1, 3.0);
 
     tensor_assert_eq(t1, t3);
 
