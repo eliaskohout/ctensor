@@ -1,8 +1,22 @@
 #include "tensorfunc_test.h"
 
+dtype tensor_test_fill_helper(void) { return DTYPE_ONE; }
 void tensor_test_fill(void)
 {
-    // TODO
+    /* Depends on tensor_init_one, tensor_init_random*/
+	uint32_t s[3] = {2, 4, 4};
+	tensor tr = tensor_new();
+	tensor t1 = tensor_new();
+    
+    tensor_init_one(t1, s, 3);
+    tensor_init_rand(tr, s, 3, 50);
+
+    tensor_fill(tr, &tensor_test_fill_helper);
+    
+    tensor_assert_eq(tr, t1);
+
+    tensor_destroy(tr);
+    tensor_destroy(t1);
 }
 
 void tensor_test_inspect(void) 
@@ -50,6 +64,7 @@ void tensor_test_map_inplace(void)
     tensor_assert_eq(t0, t);
 
     tensor_destroy(t);
+    tensor_destroy(t0);
 }
 
 void tensor_test_combine(void) 
